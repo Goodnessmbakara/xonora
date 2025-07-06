@@ -2,6 +2,68 @@
 
 A decentralized yield farming platform built on the Internet Computer (ICP) that allows users to stake ckBTC (wrapped Bitcoin) and earn yields through AI-optimized strategies.
 
+---
+
+## 🛠️ Quick Start for Local Development
+
+### Prerequisites
+- Node.js 18+ and npm
+- DFX (Internet Computer SDK) - Version 0.27.0
+- Mops (Motoko package manager)
+
+### 1. Clone and Install
+```bash
+git clone https://github.com/Goodnessmbakara/yieldbtc.git
+cd yieldbtc
+npm install
+mops install
+```
+
+### 2. Start the Local ICP Replica
+```bash
+dfx start --clean --background
+```
+
+### 3. Deploy All Canisters (Backend, Frontend, Internet Identity)
+```bash
+dfx deploy
+```
+
+- **Canister IDs:**
+  - Backend: `u6s2n-gx777-77774-qaaba-cai`
+  - Frontend: `uzt4z-lp777-77774-qaabq-cai`
+  - Internet Identity: `ulvla-h7777-77774-qaacq-cai`
+
+### 4. Initialize the Backend System
+```bash
+dfx canister call yieldbtc_backend initialize
+```
+
+### 5. Start the Frontend (on 127.0.0.1)
+```bash
+npm run dev -- --host 127.0.0.1
+```
+- Open [http://127.0.0.1:8080](http://127.0.0.1:8080) (or the port Vite prints)
+
+### 6. Internet Identity (Local Auth)
+- The app uses a local Internet Identity canister for authentication.
+- When prompted to log in, a popup will use:
+  - `http://127.0.0.1:8000?canisterId=ulvla-h7777-77774-qaacq-cai`
+- You can create a new identity or use an existing one.
+
+### 7. Troubleshooting
+- **Auth stuck on "Loading..."?**
+  - Make sure you use `127.0.0.1` (not `localhost`) everywhere.
+  - Make sure all canisters are deployed and running.
+  - Check browser console for CORS or network errors.
+- **Internet Identity errors?**
+  - Ensure you have both `internet_identity.did` and `internet_identity.wasm` in `src/declarations/internet_identity/`.
+  - If you see "Canister not found", make sure you deployed II and are using the correct canister ID.
+- **Canister import errors?**
+  - Run `dfx generate` to regenerate canister bindings if you change the backend interface.
+
+---
+
 ## 🌟 Features
 
 - **ckBTC Staking**: Stake your Bitcoin on ICP with multiple risk profiles
@@ -29,61 +91,7 @@ A decentralized yield farming platform built on the Internet Computer (ICP) that
 ### Key Canisters
 - `yieldbtc_backend`: Core business logic and state management
 - `yieldbtc_frontend`: Deployed React application
-- `llm`: AI-powered yield optimization (optional - see LLM Implementation section)
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18+ and npm
-- DFX (Internet Computer SDK) - Version 0.27.0
-- Mops (Motoko package manager)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Goodnessmbakara/yieldbtc.git
-   cd yieldbtc
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   mops install
-   ```
-
-3. **Start local development**
-   ```bash
-   # Terminal 1: Start dfx
-   dfx start --clean --background
-   
-   # Terminal 2: Deploy canisters
-   dfx deploy
-   
-   # Terminal 3: Start frontend dev server
-   npm run dev
-   ```
-
-4. **Initialize the system**
-   ```bash
-   dfx canister call yieldbtc_backend initialize
-   ```
-
-5. **Build for production**
-   ```bash
-   npm run build:icp
-   dfx deploy --network ic
-   ```
-
-### Current Status
-
-- ✅ **Frontend**: React + TypeScript + Tailwind CSS (running on localhost:8080)
-- ✅ **Backend**: Motoko canisters with yield farming logic
-- ✅ **DFX**: Upgraded to version 0.27.0
-- ✅ **Type Safety**: Fixed all Motoko type errors
-- 🔄 **Integration**: Backend deployed, ready for frontend integration
-- ⏳ **LLM Features**: Optional AI-powered yield optimization (see below)
+- `internet_identity`: Local authentication (required for local dev)
 
 ## 📁 Project Structure
 
@@ -104,32 +112,24 @@ yieldbtc/
 ## 🔧 Development
 
 ### Backend Development
-
-The backend is written in Motoko and includes:
-
 - **Stake Management**: Create, view, and unstake positions
 - **Pool Management**: Multiple yield pools with different risk profiles
 - **Portfolio Tracking**: User portfolio management and analytics
 - **Yield Calculations**: Real-time APY and earnings calculations
 
 ### Frontend Development
-
-The frontend provides:
-
 - **Landing Page**: Project introduction and features
 - **Staking Interface**: Connect wallet and stake ckBTC
 - **Dashboard**: Portfolio overview and analytics
 - **Responsive Design**: Works on desktop and mobile
 
 ### Key Components
-
 - `CanisterService`: Handles all backend communication
 - `StakingPage`: Main staking interface
 - `Dashboard`: Portfolio management
 - `Header`: Navigation and wallet connection
 
 ## 🛡️ Security Features
-
 - **Internet Identity Authentication**: Secure user authentication
 - **Input Validation**: All user inputs are validated
 - **Access Control**: Proper authorization checks
@@ -138,7 +138,6 @@ The frontend provides:
 ## 📊 API Reference
 
 ### Backend Canister Methods
-
 ```motoko
 // Initialize the system
 initialize() -> Result.Result<Text, Text>
@@ -165,7 +164,7 @@ getUserStakes(userId: UserId) -> [Stake]
 ```bash
 dfx start --clean
 dfx deploy
-npm run dev
+npm run dev -- --host 127.0.0.1
 ```
 
 ### Testnet Deployment
@@ -178,16 +177,6 @@ dfx deploy --network ic_testnet
 dfx deploy --network ic
 ```
 
-## 📈 Roadmap
-
-- [x] **Phase 1**: Basic staking functionality ✅
-- [x] **Phase 2**: Backend infrastructure and type safety ✅
-- [ ] **Phase 3**: Real ckBTC integration
-- [ ] **Phase 4**: AI-powered yield optimization (LLM canister)
-- [ ] **Phase 5**: Advanced analytics and reporting
-- [ ] **Phase 6**: Mobile app development
-- [ ] **Phase 7**: Cross-chain integrations
-
 ## 🤖 LLM Implementation Options
 
 ### Option 1: Free Local LLM (Recommended for Hackathon)
@@ -198,33 +187,21 @@ dfx deploy --network ic
 - **Implementation**: Follow the [Motoko Vibe Template LLM guide](https://github.com/pt-icp-hub/IC-Vibe-Coding-Template-Motoko#4-running-ollama)
 
 ### Option 2: Cloud LLM APIs
-- **Cost**: $0.01-$0.10 per API call
-- **Setup**: OpenAI, Anthropic, or other cloud providers
-- **Pros**: Powerful models, easy integration
-- **Cons**: Ongoing costs, requires API keys
-- **Implementation**: Use ICP's HTTP outcalls feature
+- Use OpenAI, Google, or other cloud LLM APIs (cost per call)
+- Update the backend to call the cloud API from Motoko
 
 ### Option 3: Skip LLM for MVP
-- **Cost**: $0
-- **Setup**: Use predefined yield strategies
-- **Pros**: No complexity, faster development
-- **Cons**: No AI optimization
-- **Implementation**: Hard-code risk profiles and strategies
+- Recommended for hackathon if you want to focus on core DeFi features
 
-### Recommendation for Hackathon
-Start with **Option 3** (skip LLM) to focus on core DeFi functionality. Add LLM later if time permits.
+---
 
-## 🤝 Contributing
+## 🧑‍💻 Contributing
+- Fork the repo and create a feature branch
+- Make your changes and submit a pull request
+- See the issues tab for open tasks
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## �� License
+MIT
 
 ## 🆘 Support
 
