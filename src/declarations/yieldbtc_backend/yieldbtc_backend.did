@@ -1,0 +1,51 @@
+type UserId = principal;
+type StakeId = nat;
+type PoolId = text;
+type Amount = nat64;
+type Timestamp = int;
+type APY = float64;
+
+type Stake = record {
+    id : StakeId;
+    userId : UserId;
+    amount : Amount;
+    poolId : PoolId;
+    startTime : Timestamp;
+    lastClaimTime : Timestamp;
+    isActive : bool;
+};
+
+type Pool = record {
+    id : PoolId;
+    name : text;
+    apy : APY;
+    totalStaked : Amount;
+    maxCapacity : Amount;
+    isActive : bool;
+};
+
+type Portfolio = record {
+    userId : UserId;
+    totalStaked : Amount;
+    totalEarned : Amount;
+    activeStakes : vec StakeId;
+};
+
+type SystemInfo = record {
+    owner : principal;
+    isInitialized : bool;
+    totalStakes : nat;
+};
+
+service : {
+    "initialize" : () -> (variant { ok : text; err : text });
+    "stake" : (Amount, PoolId) -> (variant { ok : StakeId; err : text });
+    "unstake" : (StakeId) -> (variant { ok : Amount; err : text });
+    "getPools" : () -> (vec Pool) query;
+    "getPool" : (PoolId) -> (variant { ok : Pool; err : text }) query;
+    "getUserStakes" : (UserId) -> (vec Stake) query;
+    "getPortfolio" : (UserId) -> (variant { ok : Portfolio; err : text }) query;
+    "getStake" : (StakeId) -> (variant { ok : Stake; err : text }) query;
+    "getSystemInfo" : () -> (SystemInfo) query;
+    "whoami" : () -> (principal);
+}; 

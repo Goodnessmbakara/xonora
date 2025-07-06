@@ -1,0 +1,53 @@
+{
+  "canisters": {
+    "yieldbtc_backend": {
+      "type": "motoko",
+      "main": "src/backend/main.mo",
+      "dependencies": []
+    },
+    "yieldbtc_frontend": {
+      "type": "assets",
+      "source": [
+        "dist",
+        ".dfx/local/canisters/yieldbtc_backend"
+      ],
+      "dependencies": [
+        "yieldbtc_backend"
+      ]
+    },
+    "llm": {
+      "type": "custom",
+      "build": [],
+      "deploy": [],
+      "upgrade": [],
+      "candid": "deps/llm/llm.did",
+      "wasm": "deps/llm/llm.wasm"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": "",
+      "args": ""
+    },
+    "canister_http": {
+      "enabled": false
+    },
+    "proguard": {
+      "enabled": false
+    },
+    "rust": {
+      "args": ""
+    },
+    "vendor": {
+      "dependencies": []
+    }
+  },
+  "dfx": "0.18.0",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+} 

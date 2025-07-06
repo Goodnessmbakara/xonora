@@ -1,0 +1,17 @@
+[package]
+name = "yieldbtc"
+version = "0.1.0"
+repo = "https://github.com/dfinity/motoko-base"
+authors = ["Your Name <your.email@example.com>"]
+
+[dependencies]
+base = "0.8.0"
+ic = "0.8.0"
+ic-cdk = "0.8.0"
+ic-cdk-macros = "0.8.0"
+ic-stable-structures = "0.8.0"
+ic-cdk-timers = "0.8.0"
+ic-cdk-common = "0.8.0"
+
+[dev-dependencies]
+ic-cdk-tests = "0.8.0" 
