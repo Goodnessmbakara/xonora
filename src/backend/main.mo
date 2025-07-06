@@ -17,9 +17,6 @@ import Time "mo:base/Time";
 import Timer "mo:base/Timer";
 import Bool "mo:base/Bool";
 
-import IC "mo:base/IC";
-import StableBTreeMap "mo:base/StableBTreeMap";
-
 shared ({ caller = initializer }) actor class YieldBTC() = {
     // Types
     type UserId = Principal;
@@ -66,7 +63,7 @@ shared ({ caller = initializer }) actor class YieldBTC() = {
 
     // Mutable storage
     private var stakes = HashMap.HashMap<StakeId, Stake>(0, Nat.equal, Hash.hash);
-    private var pools = HashMap.HashMap<PoolId, Pool>(0, Text.equal, Hash.hash);
+    private var pools = HashMap.HashMap<PoolId, Pool>(0, Text.equal, Text.hash);
     private var portfolios = HashMap.HashMap<UserId, Portfolio>(0, Principal.equal, Principal.hash);
 
     // System state
@@ -79,8 +76,8 @@ shared ({ caller = initializer }) actor class YieldBTC() = {
             id = "stable";
             name = "Stable Pool";
             apy = 5.0;
-            totalStaked = 0;
-            maxCapacity = 100_000_000_000; // 1 BTC in satoshis
+            totalStaked = 0 : Nat64;
+            maxCapacity = 100_000_000_000 : Nat64; // 1 BTC in satoshis
             isActive = true;
         };
 
@@ -88,8 +85,8 @@ shared ({ caller = initializer }) actor class YieldBTC() = {
             id = "balanced";
             name = "Balanced Pool";
             apy = 10.0;
-            totalStaked = 0;
-            maxCapacity = 100_000_000_000; // 1 BTC in satoshis
+            totalStaked = 0 : Nat64;
+            maxCapacity = 100_000_000_000 : Nat64;
             isActive = true;
         };
 
@@ -97,8 +94,8 @@ shared ({ caller = initializer }) actor class YieldBTC() = {
             id = "aggressive";
             name = "Aggressive Pool";
             apy = 15.0;
-            totalStaked = 0;
-            maxCapacity = 100_000_000_000; // 1 BTC in satoshis
+            totalStaked = 0 : Nat64;
+            maxCapacity = 100_000_000_000 : Nat64;
             isActive = true;
         };
 
@@ -170,18 +167,22 @@ shared ({ caller = initializer }) actor class YieldBTC() = {
 
         // Update or create portfolio
         let portfolio = switch (portfolios.get(caller)) {
-            case (?p) {
-                userId = p.userId;
-                totalStaked = p.totalStaked + amount;
-                totalEarned = p.totalEarned;
-                activeStakes = Array.append(p.activeStakes, [stakeId]);
-            };
-            case null {
-                userId = caller;
-                totalStaked = amount;
-                totalEarned = 0;
-                activeStakes = [stakeId];
-            };
+            case (?p) (
+                {
+                    userId = p.userId;
+                    totalStaked = p.totalStaked + amount;
+                    totalEarned = p.totalEarned;
+                    activeStakes = Array.append(p.activeStakes, [stakeId]);
+                }
+            );
+            case null (
+                {
+                    userId = caller;
+                    totalStaked = amount;
+                    totalEarned = 0 : Nat64;
+                    activeStakes = [stakeId];
+                }
+            );
         };
 
         // Save to storage
@@ -238,12 +239,14 @@ shared ({ caller = initializer }) actor class YieldBTC() = {
 
         // Update portfolio
         let portfolio = switch (portfolios.get(caller)) {
-            case (?p) {
-                userId = p.userId;
-                totalStaked = p.totalStaked - stake.amount;
-                totalEarned = p.totalEarned + earned;
-                activeStakes = Array.filter(p.activeStakes, func(id: StakeId) : Bool { id != stakeId });
-            };
+            case (?p) (
+                {
+                    userId = p.userId;
+                    totalStaked = p.totalStaked - stake.amount;
+                    totalEarned = p.totalEarned + earned;
+                    activeStakes = Array.filter(p.activeStakes, func(id: StakeId) : Bool { id != stakeId });
+                }
+            );
             case null return #err("Portfolio not found");
         };
 
@@ -259,7 +262,7 @@ shared ({ caller = initializer }) actor class YieldBTC() = {
     private func calculateYield(stake: Stake) : Amount {
         let pool = switch (pools.get(stake.poolId)) {
             case (?p) p;
-            case null return 0;
+            case null return 0 : Nat64;
         };
 
         let timeDiff = Time.now() - stake.lastClaimTime;
@@ -267,8 +270,8 @@ shared ({ caller = initializer }) actor class YieldBTC() = {
         let apyRate = pool.apy / 100.0;
         let dailyRate = apyRate / 365.0;
         
-        let yieldAmount = Float.fromInt(stake.amount) * dailyRate * daysDiff;
-        Int.abs(Float.toInt(yieldAmount))
+        let yieldAmount = Float.fromInt(Nat64.toNat(stake.amount)) * dailyRate * daysDiff;
+        Nat64.fromNat(Int.abs(Float.toInt(yieldAmount)))
     };
 
     // Query functions
@@ -327,7 +330,7 @@ shared ({ caller = initializer }) actor class YieldBTC() = {
 
     system func postupgrade() {
         stakes := HashMap.fromIter<StakeId, Stake>(stakesEntries.vals(), stakesEntries.size(), Nat.equal, Hash.hash);
-        pools := HashMap.fromIter<PoolId, Pool>(poolsEntries.vals(), poolsEntries.size(), Text.equal, Hash.hash);
+        pools := HashMap.fromIter<PoolId, Pool>(poolsEntries.vals(), poolsEntries.size(), Text.equal, Text.hash);
         portfolios := HashMap.fromIter<UserId, Portfolio>(portfoliosEntries.vals(), portfoliosEntries.size(), Principal.equal, Principal.hash);
         stakesEntries := [];
         poolsEntries := [];

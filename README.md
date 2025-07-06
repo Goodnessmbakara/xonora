@@ -29,14 +29,14 @@ A decentralized yield farming platform built on the Internet Computer (ICP) that
 ### Key Canisters
 - `yieldbtc_backend`: Core business logic and state management
 - `yieldbtc_frontend`: Deployed React application
-- `llm`: AI-powered yield optimization (optional)
+- `llm`: AI-powered yield optimization (optional - see LLM Implementation section)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- DFX (Internet Computer SDK)
+- DFX (Internet Computer SDK) - Version 0.27.0
 - Mops (Motoko package manager)
 
 ### Installation
@@ -56,7 +56,7 @@ A decentralized yield farming platform built on the Internet Computer (ICP) that
 3. **Start local development**
    ```bash
    # Terminal 1: Start dfx
-   dfx start --clean
+   dfx start --clean --background
    
    # Terminal 2: Deploy canisters
    dfx deploy
@@ -75,6 +75,15 @@ A decentralized yield farming platform built on the Internet Computer (ICP) that
    npm run build:icp
    dfx deploy --network ic
    ```
+
+### Current Status
+
+- ✅ **Frontend**: React + TypeScript + Tailwind CSS (running on localhost:8080)
+- ✅ **Backend**: Motoko canisters with yield farming logic
+- ✅ **DFX**: Upgraded to version 0.27.0
+- ✅ **Type Safety**: Fixed all Motoko type errors
+- 🔄 **Integration**: Backend deployed, ready for frontend integration
+- ⏳ **LLM Features**: Optional AI-powered yield optimization (see below)
 
 ## 📁 Project Structure
 
@@ -171,12 +180,39 @@ dfx deploy --network ic
 
 ## 📈 Roadmap
 
-- [ ] **Phase 1**: Basic staking functionality ✅
-- [ ] **Phase 2**: Real ckBTC integration
-- [ ] **Phase 3**: AI-powered yield optimization
-- [ ] **Phase 4**: Advanced analytics and reporting
-- [ ] **Phase 5**: Mobile app development
-- [ ] **Phase 6**: Cross-chain integrations
+- [x] **Phase 1**: Basic staking functionality ✅
+- [x] **Phase 2**: Backend infrastructure and type safety ✅
+- [ ] **Phase 3**: Real ckBTC integration
+- [ ] **Phase 4**: AI-powered yield optimization (LLM canister)
+- [ ] **Phase 5**: Advanced analytics and reporting
+- [ ] **Phase 6**: Mobile app development
+- [ ] **Phase 7**: Cross-chain integrations
+
+## 🤖 LLM Implementation Options
+
+### Option 1: Free Local LLM (Recommended for Hackathon)
+- **Cost**: $0
+- **Setup**: Use Ollama with local models (llama3.1:8b)
+- **Pros**: No costs, full control, works offline
+- **Cons**: Requires local setup, limited model capabilities
+- **Implementation**: Follow the [Motoko Vibe Template LLM guide](https://github.com/pt-icp-hub/IC-Vibe-Coding-Template-Motoko#4-running-ollama)
+
+### Option 2: Cloud LLM APIs
+- **Cost**: $0.01-$0.10 per API call
+- **Setup**: OpenAI, Anthropic, or other cloud providers
+- **Pros**: Powerful models, easy integration
+- **Cons**: Ongoing costs, requires API keys
+- **Implementation**: Use ICP's HTTP outcalls feature
+
+### Option 3: Skip LLM for MVP
+- **Cost**: $0
+- **Setup**: Use predefined yield strategies
+- **Pros**: No complexity, faster development
+- **Cons**: No AI optimization
+- **Implementation**: Hard-code risk profiles and strategies
+
+### Recommendation for Hackathon
+Start with **Option 3** (skip LLM) to focus on core DeFi functionality. Add LLM later if time permits.
 
 ## 🤝 Contributing
 

@@ -1,0 +1,41 @@
+// Version: 1.0.0
+type APY__36323999 = Float;
+type Amount__789575460 = Nat64;
+type PoolId__370745042 = Text;
+type Pool__88143927 =
+  {
+    apy : APY__36323999;
+    id : PoolId__370745042;
+    isActive : Bool;
+    maxCapacity : Amount__789575460;
+    name : Text;
+    totalStaked : Amount__789575460
+  };
+type Portfolio__1031131124 =
+  {
+    activeStakes : [StakeId__183629912];
+    totalEarned : Amount__789575460;
+    totalStaked : Amount__789575460;
+    userId : UserId__9519127
+  };
+type StakeId__183629912 = Nat;
+type Stake__489018412 =
+  {
+    amount : Amount__789575460;
+    id : StakeId__183629912;
+    isActive : Bool;
+    lastClaimTime : Timestamp__932265376;
+    poolId : PoolId__370745042;
+    startTime : Timestamp__932265376;
+    userId : UserId__9519127
+  };
+type Timestamp__932265376 = Int;
+type UserId__9519127 = Principal;
+actor {
+  stable var isInitialized : Bool;
+  stable var owner : Principal;
+  stable var poolsEntries : [(PoolId__370745042, Pool__88143927)];
+  stable var portfoliosEntries : [(UserId__9519127, Portfolio__1031131124)];
+  stable var stakeCounter : Nat;
+  stable var stakesEntries : [(StakeId__183629912, Stake__489018412)]
+};
