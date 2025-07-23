@@ -77,9 +77,9 @@ dfx deploy
 ```
 
 - **Canister IDs:**
-  - Backend: `xonora_backend` (will be generated on deployment)
-  - Frontend: `xonora_frontend` (will be generated on deployment)
-  - Internet Identity: `internet_identity` (will be generated on deployment)
+  - Backend: `uxrrr-q7777-77774-qaaaq-cai`
+  - Frontend: `u6s2n-gx777-77774-qaaba-cai`
+  - Internet Identity: `ulvla-h7777-77774-qaacq-cai` (local)
 
 ### 4. Initialize the Backend System
 ```bash
@@ -91,11 +91,13 @@ dfx canister call xonora_backend initialize
 npm run dev -- --host 127.0.0.1
 ```
 - Open [http://127.0.0.1:8080](http://127.0.0.1:8080) (or the port Vite prints)
+- **Alternative**: Access via canister directly at [http://u6s2n-gx777-77774-qaaba-cai.localhost:8000/](http://u6s2n-gx777-77774-qaaba-cai.localhost:8000/)
 
 ### 6. Internet Identity (Local Auth)
 - The app uses a local Internet Identity canister for authentication.
 - When prompted to log in, a popup will use:
   - `http://127.0.0.1:8000?canisterId=ulvla-h7777-77774-qaacq-cai`
+- **Backend API**: `http://127.0.0.1:8000/?canisterId=uzt4z-lp777-77774-qaabq-cai&id=uxrrr-q7777-77774-qaaaq-cai`
 - You can create a new identity or use an existing one.
 
 ### 7. Troubleshooting

@@ -1,17 +1,11 @@
 {
   "__Candid_UI": {
-    "local": "umunu-kh777-77774-qaaca-cai"
+    "local": "uzt4z-lp777-77774-qaabq-cai"
   },
-  "internet_identity": {
-    "local": "ulvla-h7777-77774-qaacq-cai"
-  },
-  "llm": {
+  "xonora_backend": {
     "local": "uxrrr-q7777-77774-qaaaq-cai"
   },
-  "yieldbtc_backend": {
+  "xonora_frontend": {
     "local": "u6s2n-gx777-77774-qaaba-cai"
-  },
-  "yieldbtc_frontend": {
-    "local": "uzt4z-lp777-77774-qaabq-cai"
   }
 }

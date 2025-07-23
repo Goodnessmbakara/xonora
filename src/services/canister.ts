@@ -68,7 +68,7 @@ class CanisterService {
       });
 
       // Set canister ID for local development
-      const LOCAL_CANISTER_ID = "u6s2n-gx777-77774-qaaba-cai";
+      const LOCAL_CANISTER_ID = "uxrrr-q7777-77774-qaaaq-cai";
       this.canisterId = process.env.NODE_ENV === 'production' 
         ? (process.env.VITE_CANISTER_ID || 'rrkah-fqaaa-aaaaa-aaaaq-cai')
         : LOCAL_CANISTER_ID;
