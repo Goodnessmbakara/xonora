@@ -8,8 +8,7 @@
     "xonora_frontend": {
       "type": "assets",
       "source": [
-        "dist",
-        ".dfx/local/canisters/xonora_backend"
+        "dist"
       ],
       "dependencies": [
         "xonora_backend"
@@ -44,6 +43,9 @@
     "local": {
       "bind": "127.0.0.1:8000",
       "type": "ephemeral"
+    },
+    "ic": {
+      "providers": ["https://ic0.app"]
     }
   },
   "version": 1

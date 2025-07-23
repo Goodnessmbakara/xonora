@@ -208,8 +208,25 @@ dfx deploy --network ic_testnet
 
 ### Mainnet Deployment
 ```bash
+# Build the frontend
+npm run build
+
+# Deploy to mainnet
 dfx deploy --network ic
+
+# Get canister IDs
+dfx canister id xonora_backend --network ic
+dfx canister id xonora_frontend --network ic
+
+# Initialize the backend
+dfx canister call xonora_backend initialize --network ic
 ```
+
+### Production URLs
+After deployment, your canisters will be available at:
+- **Frontend**: `https://YOUR_FRONTEND_CANISTER_ID.ic0.app`
+- **Backend**: `https://YOUR_BACKEND_CANISTER_ID.ic0.app`
+- **Internet Identity**: `https://identity.ic0.app` (use official II for production)
 
 ## 🤖 LLM Implementation Options
 
