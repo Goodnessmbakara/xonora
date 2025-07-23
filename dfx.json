@@ -13,11 +13,6 @@
       "dependencies": [
         "xonora_backend"
       ]
-    },
-    "internet_identity": {
-      "type": "custom",
-      "candid": "src/declarations/internet_identity/internet_identity.did",
-      "wasm": "src/declarations/internet_identity/internet_identity.wasm"
     }
   },
   "defaults": {

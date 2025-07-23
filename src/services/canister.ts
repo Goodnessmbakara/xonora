@@ -96,7 +96,7 @@ class CanisterService {
       this.authClient!.login({
         identityProvider: process.env.NODE_ENV === 'production'
           ? 'https://identity.ic0.app'
-          : 'http://127.0.0.1:8000?canisterId=rdmx6-jaaaa-aaaaa-aaadq-cai',
+          : 'http://127.0.0.1:8000?canisterId=ulvla-h7777-77774-qaacq-cai',
         onSuccess: () => resolve(),
         onError: (error) => reject(error),
       });
