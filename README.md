@@ -1,4 +1,4 @@
-# 🚀 YieldBTC - Bitcoin Yield Farming on ICP
+# 🚀 Xonora - Bitcoin Yield Farming on ICP
 
 A decentralized yield farming platform built on the Internet Computer (ICP) that allows users to stake ckBTC (wrapped Bitcoin) and earn yields through AI-optimized strategies.
 
@@ -13,8 +13,8 @@ A decentralized yield farming platform built on the Internet Computer (ICP) that
 
 ### 1. Clone and Install
 ```bash
-git clone https://github.com/Goodnessmbakara/yieldbtc.git
-cd yieldbtc
+git clone https://github.com/Goodnessmbakara/xonora.git
+cd xonora
 npm install
 mops install
 ```
@@ -30,13 +30,13 @@ dfx deploy
 ```
 
 - **Canister IDs:**
-  - Backend: `u6s2n-gx777-77774-qaaba-cai`
-  - Frontend: `uzt4z-lp777-77774-qaabq-cai`
-  - Internet Identity: `ulvla-h7777-77774-qaacq-cai`
+  - Backend: `xonora_backend` (will be generated on deployment)
+  - Frontend: `xonora_frontend` (will be generated on deployment)
+  - Internet Identity: `internet_identity` (will be generated on deployment)
 
 ### 4. Initialize the Backend System
 ```bash
-dfx canister call yieldbtc_backend initialize
+dfx canister call xonora_backend initialize
 ```
 
 ### 5. Start the Frontend (on 127.0.0.1)
@@ -89,14 +89,14 @@ npm run dev -- --host 127.0.0.1
 - **Portfolio management system**
 
 ### Key Canisters
-- `yieldbtc_backend`: Core business logic and state management
-- `yieldbtc_frontend`: Deployed React application
+- `xonora_backend`: Core business logic and state management
+- `xonora_frontend`: Deployed React application
 - `internet_identity`: Local authentication (required for local dev)
 
 ## 📁 Project Structure
 
 ```
-yieldbtc/
+xonora/
 ├── src/
 │   ├── backend/                 # Motoko canisters
 │   │   └── main.mo             # Main backend logic
@@ -134,6 +134,40 @@ yieldbtc/
 - **Input Validation**: All user inputs are validated
 - **Access Control**: Proper authorization checks
 - **Stable Storage**: Persistent data storage on ICP
+
+## 🚀 ICP Tech Features
+
+### Currently Integrated
+- ✅ **Internet Identity**: Passwordless authentication using ICP's native identity system
+- ✅ **Canister Smart Contracts**: Decentralized backend logic on ICP
+- ✅ **Stable Storage**: Persistent data storage across canister upgrades
+
+### Potential Integrations for Xonora
+
+#### 🔐 **Threshold ECDSA** (Recommended for DeFi)
+- **Use Case**: Multi-signature wallet for yield farming operations
+- **Benefits**: Enhanced security for large staking operations, institutional-grade custody
+- **Implementation**: Use for pool management and emergency withdrawals
+
+#### 🔗 **Chain Fusion** (Future Enhancement)
+- **Use Case**: Cross-chain yield farming beyond just Bitcoin
+- **Benefits**: Access to yields from Ethereum, Solana, and other chains
+- **Implementation**: Integrate with EVM and Solana subnets on ICP
+
+#### 🔑 **VetKeys** (Advanced Security)
+- **Use Case**: Verifiable credentials for KYC/AML compliance
+- **Benefits**: Regulatory compliance while maintaining privacy
+- **Implementation**: Optional KYC for institutional users
+
+#### ⛽ **Reverse Gas Fee Model** (User Experience)
+- **Use Case**: Users don't pay gas fees for transactions
+- **Benefits**: Better UX, no wallet setup required
+- **Implementation**: Already partially implemented with Internet Identity
+
+#### 🤖 **AI/LLM Integration** (Yield Optimization)
+- **Use Case**: AI-powered yield strategy recommendations
+- **Benefits**: Optimized returns based on market conditions
+- **Implementation**: Local LLM or cloud APIs via HTTP outcalls
 
 ## 📊 API Reference
 

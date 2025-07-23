@@ -1,18 +1,18 @@
 {
   "canisters": {
-    "yieldbtc_backend": {
+    "xonora_backend": {
       "type": "motoko",
       "main": "src/backend/main.mo",
       "dependencies": []
     },
-    "yieldbtc_frontend": {
+    "xonora_frontend": {
       "type": "assets",
       "source": [
         "dist",
-        ".dfx/local/canisters/yieldbtc_backend"
+        ".dfx/local/canisters/xonora_backend"
       ],
       "dependencies": [
-        "yieldbtc_backend"
+        "xonora_backend"
       ]
     },
     "internet_identity": {

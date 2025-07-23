@@ -67,8 +67,11 @@ class CanisterService {
           : 'http://127.0.0.1:8000',
       });
 
-      // Set canister ID (will be set after deployment)
-      this.canisterId = process.env.VITE_CANISTER_ID || 'rrkah-fqaaa-aaaaa-aaaaq-cai';
+      // Set canister ID for local development
+      const LOCAL_CANISTER_ID = "u6s2n-gx777-77774-qaaba-cai";
+      this.canisterId = process.env.NODE_ENV === 'production' 
+        ? (process.env.VITE_CANISTER_ID || 'rrkah-fqaaa-aaaaa-aaaaq-cai')
+        : LOCAL_CANISTER_ID;
 
       // Create actor
       this.actor = Actor.createActor<_SERVICE>(idlFactory, {
