@@ -17,7 +17,7 @@ import Time "mo:base/Time";
 import Timer "mo:base/Timer";
 import Bool "mo:base/Bool";
 
-shared ({ caller = initializer }) actor class YieldBTC() = {
+shared ({ caller = initializer }) actor class Xonora() = {
     // Types
     type UserId = Principal;
     type StakeId = Nat;

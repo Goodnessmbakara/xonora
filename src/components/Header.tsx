@@ -1,52 +1,77 @@
-import React, { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import Logo from "./Logo";
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import Logo from './Logo';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, principal, login, logout, isLoading } = useAuth();
+  const { isAuthenticated, login, logout } = useAuth();
 
-  const navItems = [
-    { label: "Home", href: "#home" },
-    { label: "About", href: "#about" },
-    { label: "How It Works", href: "#how-it-works" },
-    { label: "Staking", href: "/staking" },
-    { label: "Dashboard", href: "/dashboard" },
-    { label: "FAQ", href: "#faq" },
-    { label: "Contact", href: "#contact" },
-  ];
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-yield-dark/95 backdrop-blur-sm border-b border-yield-gray-600">
-      <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <Logo size="sm" />
+    <header className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Logo />
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+            <a
+              href="#home"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium"
+            >
+              Home
+            </a>
+            <a
+              href="#features"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium"
+            >
+              Features
+            </a>
+            <a
+              href="#how-it-works"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium"
+            >
+              How It Works
+            </a>
+            <a
+              href="#faq"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium"
+            >
+              FAQ
+            </a>
+            <a
+              href="#contact"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
+            >
+              Contact
+            </a>
+            {isAuthenticated ? (
               <a
-                key={item.label}
-                href={item.href}
-                className="text-yield-light hover:text-yield-green-400 transition-colors duration-300 font-medium"
+                href="/dashboard"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
               >
-                {item.label}
+                Dashboard
               </a>
-            ))}
+            ) : null}
           </nav>
 
-          {/* Action Buttons */}
+          {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isLoading ? (
-              <div className="text-yield-gray-400">Loading...</div>
-            ) : isAuthenticated ? (
+            {isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                <span className="text-yield-gray-400 text-sm">
-                  {principal?.slice(0, 8)}...{principal?.slice(-8)}
-                </span>
+                <a
+                  href="/staking"
+                  className="px-6 py-2 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark font-semibold rounded-lg hover:scale-105 transition-all duration-300"
+                >
+                  Stake Now
+                </a>
                 <button
                   onClick={logout}
-                  className="text-yield-light hover:text-yield-green-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-yield-green-400"
+                  className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
                 >
                   Logout
                 </button>
@@ -54,78 +79,106 @@ const Header = () => {
             ) : (
               <button
                 onClick={login}
-                className="text-yield-light hover:text-yield-green-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-yield-green-400"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
               >
                 Connect Wallet
               </button>
             )}
-            <a href="/staking" className="btn-primary">
-              Get Started
-            </a>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-yield-light"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={toggleMenu}
+            className="md:hidden p-2 text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
             </svg>
           </button>
         </div>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 py-4 border-t border-yield-gray-600">
+          <div className="md:hidden py-4 border-t border-gray-800">
             <nav className="flex flex-col space-y-4">
-              {navItems.map((item) => (
+              <a
+                href="#home"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
+              </a>
+              <a
+                href="#features"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Features
+              </a>
+              <a
+                href="#how-it-works"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                How It Works
+              </a>
+              <a
+                href="#faq"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                FAQ
+              </a>
+              <a
+                href="#contact"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Contact
+              </a>
+              {isAuthenticated ? (
                 <a
-                  key={item.label}
-                  href={item.href}
-                  className="text-yield-light hover:text-yield-green-400 transition-colors duration-300"
+                  href="/dashboard"
+                  className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item.label}
+                  Dashboard
                 </a>
-              ))}
-              <div className="flex flex-col space-y-2 pt-4">
-                {isLoading ? (
-                  <div className="text-yield-gray-400">Loading...</div>
-                ) : isAuthenticated ? (
-                  <>
-                    <span className="text-yield-gray-400 text-sm">
-                      {principal?.slice(0, 8)}...{principal?.slice(-8)}
-                    </span>
-                    <button
-                      onClick={logout}
-                      className="text-yield-light hover:text-yield-green-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-yield-green-400"
-                    >
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={login}
-                    className="text-yield-light hover:text-yield-green-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-yield-green-400"
+              ) : null}
+              {isAuthenticated ? (
+                <div className="flex flex-col space-y-2">
+                  <a
+                    href="/staking"
+                    className="px-6 py-2 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark font-semibold rounded-lg text-center"
+                    onClick={() => setIsMenuOpen(false)}
                   >
-                    Connect Wallet
+                    Stake Now
+                  </a>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 text-left"
+                  >
+                    Logout
                   </button>
-                )}
-                <a href="/staking" className="btn-primary">
-                  Get Started
-                </a>
-              </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    login();
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400 text-left"
+                >
+                  Connect Wallet
+                </button>
+              )}
             </nav>
           </div>
         )}

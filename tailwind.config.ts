@@ -1,6 +1,9 @@
 
 import type { Config } from "tailwindcss";
 
+// Note: This project uses Tailwind CSS 3.4.11 which supports <alpha-value> syntax
+// in hsl(var(--token) / <alpha-value>) patterns for opacity utilities
+
 export default {
 	darkMode: ["class"],
 	content: [
@@ -26,11 +29,11 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
+					DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
 					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
+					DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
 					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				destructive: {
@@ -42,7 +45,7 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
+					DEFAULT: 'hsl(var(--accent) / <alpha-value>)',
 					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
@@ -63,18 +66,50 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				'yield-dark': '#121212',
+				'xonora-dark': 'hsl(var(--xonora-dark) / <alpha-value>)',
+				'xonora-primary': {
+					DEFAULT: 'hsl(var(--xonora-primary-500) / <alpha-value>)',
+					300: 'hsl(var(--xonora-primary-300) / <alpha-value>)',
+					400: 'hsl(var(--xonora-primary-400) / <alpha-value>)',
+					500: 'hsl(var(--xonora-primary-500) / <alpha-value>)',
+					600: 'hsl(var(--xonora-primary-600) / <alpha-value>)',
+					700: 'hsl(var(--xonora-primary-700) / <alpha-value>)'
+				},
+				'xonora-secondary': {
+					DEFAULT: 'hsl(var(--xonora-secondary-500) / <alpha-value>)',
+					300: 'hsl(var(--xonora-secondary-300) / <alpha-value>)',
+					400: 'hsl(var(--xonora-secondary-400) / <alpha-value>)',
+					500: 'hsl(var(--xonora-secondary-500) / <alpha-value>)',
+					600: 'hsl(var(--xonora-secondary-600) / <alpha-value>)',
+					700: 'hsl(var(--xonora-secondary-700) / <alpha-value>)'
+				},
+				'xonora-accent': {
+					DEFAULT: 'hsl(var(--xonora-accent-500) / <alpha-value>)',
+					300: 'hsl(var(--xonora-accent-300) / <alpha-value>)',
+					400: 'hsl(var(--xonora-accent-400) / <alpha-value>)',
+					500: 'hsl(var(--xonora-accent-500) / <alpha-value>)',
+					600: 'hsl(var(--xonora-accent-600) / <alpha-value>)'
+				},
+				'xonora-light': 'hsl(var(--xonora-light) / <alpha-value>)',
+				// Temporary aliases for backward compatibility
+				'yield-dark': 'hsl(var(--xonora-dark) / <alpha-value>)',
 				'yield-green': {
-					400: '#34C759',
-					500: '#34C759',
-					600: '#22A447'
+					DEFAULT: 'hsl(var(--xonora-primary-500) / <alpha-value>)',
+					300: 'hsl(var(--xonora-primary-300) / <alpha-value>)',
+					400: 'hsl(var(--xonora-primary-400) / <alpha-value>)',
+					500: 'hsl(var(--xonora-primary-500) / <alpha-value>)',
+					600: 'hsl(var(--xonora-primary-600) / <alpha-value>)',
+					700: 'hsl(var(--xonora-primary-700) / <alpha-value>)'
 				},
 				'yield-gray': {
-					400: '#6B7280',
-					500: '#6B7280',
-					600: '#4B5563'
+					DEFAULT: 'hsl(var(--xonora-secondary-500) / <alpha-value>)',
+					300: 'hsl(var(--xonora-secondary-300) / <alpha-value>)',
+					400: 'hsl(var(--xonora-secondary-400) / <alpha-value>)',
+					500: 'hsl(var(--xonora-secondary-500) / <alpha-value>)',
+					600: 'hsl(var(--xonora-secondary-600) / <alpha-value>)',
+					700: 'hsl(var(--xonora-secondary-700) / <alpha-value>)'
 				},
-				'yield-light': '#F3F4F6'
+				'yield-light': 'hsl(var(--xonora-light) / <alpha-value>)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -118,10 +153,10 @@ export default {
 				},
 				'glow': {
 					'0%, 100%': {
-						boxShadow: '0 0 20px rgba(52, 199, 89, 0.3)'
+						'box-shadow': '0 0 20px hsl(var(--xonora-primary-500) / 0.3)'
 					},
 					'50%': {
-						boxShadow: '0 0 40px rgba(52, 199, 89, 0.6)'
+						'box-shadow': '0 0 40px hsl(var(--xonora-primary-500) / 0.6)'
 					}
 				},
 				'float': {
@@ -147,7 +182,7 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-				'grid-pattern': 'linear-gradient(rgba(52, 199, 89, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(52, 199, 89, 0.1) 1px, transparent 1px)'
+				'grid-pattern': 'linear-gradient(hsl(var(--xonora-primary-500) / 0.1) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--xonora-primary-500) / 0.1) 1px, transparent 1px)'
 			},
 			backgroundSize: {
 				'grid': '20px 20px'

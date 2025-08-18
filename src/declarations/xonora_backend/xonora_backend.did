@@ -1,4 +1,4 @@
-type YieldBTC = 
+type Xonora = 
  service {
    getPool: (poolId: PoolId) -> (Result_5) query;
    getPools: () -> (vec Pool) query;
@@ -78,4 +78,4 @@ type Pool =
  };
 type Amount = nat64;
 type APY = float64;
-service : () -> YieldBTC
+service : () -> Xonora

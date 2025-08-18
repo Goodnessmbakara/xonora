@@ -1,8 +1,8 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
 import { InternetIdentity } from '@dfinity/auth-client/lib/cjs/providers/internet-identity';
-import { idlFactory } from '../declarations/yieldbtc_backend/yieldbtc_backend.did.js';
-import type { _SERVICE } from '../declarations/yieldbtc_backend/yieldbtc_backend.did';
+import { idlFactory } from '../declarations/xonora_backend/xonora_backend.did.js';
+import type { _SERVICE as Xonora } from '../declarations/xonora_backend/xonora_backend.did.d.ts';
 
 // Types
 export interface Pool {
@@ -39,7 +39,7 @@ export interface SystemInfo {
 
 class CanisterService {
   private agent: HttpAgent | null = null;
-  private actor: Actor<_SERVICE> | null = null;
+  private actor: Actor<Xonora> | null = null;
   private authClient: AuthClient | null = null;
   private canisterId: string | null = null;
 
@@ -74,7 +74,7 @@ class CanisterService {
         : LOCAL_CANISTER_ID;
 
       // Create actor
-      this.actor = Actor.createActor<_SERVICE>(idlFactory, {
+      this.actor = Actor.createActor<Xonora>(idlFactory, {
         agent: this.agent,
         canisterId: this.canisterId,
       });

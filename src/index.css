@@ -19,16 +19,16 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 163 96% 26%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
+    --secondary: 189 48% 93%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 108 44% 68%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -55,6 +55,26 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Xonora brand colors */
+    --xonora-dark: 0 0% 7%;
+    --xonora-primary-300: 140 59% 65%;
+    --xonora-primary-400: 140 59% 53%;
+    --xonora-primary-500: 163 96% 26%;
+    --xonora-primary-600: 163 96% 20%;
+    --xonora-primary-700: 163 96% 15%;
+    --xonora-primary-foreground: 0 0% 100%;
+    --xonora-secondary-300: 189 48% 97%;
+    --xonora-secondary-400: 189 48% 93%;
+    --xonora-secondary-500: 172 14% 49%;
+    --xonora-secondary-600: 172 14% 40%;
+    --xonora-secondary-700: 172 14% 30%;
+    --xonora-light: 189 48% 93%;
+    --xonora-accent-300: 108 44% 75%;
+    --xonora-accent-400: 108 44% 72%;
+    --xonora-accent-500: 108 44% 68%;
+    --xonora-accent-600: 108 44% 60%;
+    --surface-900: 0 0% 9%;
   }
 
   .dark {
@@ -67,17 +87,17 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 140 59% 53%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 172 14% 40%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 108 44% 68%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -102,7 +122,7 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-yield-dark text-yield-light font-body;
+    @apply bg-background text-foreground font-body;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -112,20 +132,15 @@ All colors MUST be HSL.
 
 @layer components {
   .btn-primary {
-    @apply bg-gradient-to-r from-yield-green-400 to-yield-green-600 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yield-green-400/25;
+    @apply bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-[hsl(var(--xonora-primary-foreground))] px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_hsl(var(--xonora-primary-400)/0.25)];
   }
   
   .section-gradient {
-    @apply bg-gradient-to-b from-yield-dark to-gray-900;
+    @apply bg-gradient-to-b from-xonora-dark to-[hsl(var(--surface-900))];
   }
   
   .text-gradient {
-    @apply bg-gradient-to-r from-yield-green-400 to-yield-green-600 bg-clip-text text-transparent;
-  }
-  
-  .grid-bg {
-    background-image: linear-gradient(rgba(52, 199, 89, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(52, 199, 89, 0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
+    @apply bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 bg-clip-text text-transparent;
   }
 }
 
@@ -136,10 +151,10 @@ All colors MUST be HSL.
 .cursor-dot {
   width: 8px;
   height: 8px;
-  background: #34C759;
+  background: hsl(var(--xonora-primary-500));
   border-radius: 50%;
   position: fixed;
   pointer-events: none;
   z-index: 9999;
-  box-shadow: 0 0 20px rgba(52, 199, 89, 0.6);
+  box-shadow: 0 0 20px hsl(var(--xonora-primary-500) / 0.6);
 }

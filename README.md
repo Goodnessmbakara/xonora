@@ -126,7 +126,7 @@ npm run dev -- --host 127.0.0.1
 
 ### Frontend
 - **React 18** with TypeScript
-- **Tailwind CSS** for styling
+- **Tailwind CSS** for styling with Xonora color scheme
 - **Shadcn/ui** component library
 - **React Query** for data fetching
 - **React Router** for navigation
@@ -377,7 +377,7 @@ MIT
 
 - **Documentation**: [ICP Docs](https://internetcomputer.org/docs)
 - **Community**: [ICP Discord](https://discord.gg/icp)
-- **Issues**: [GitHub Issues](https://github.com/Goodnessmbakara/yieldbtc/issues)
+- **Issues**: [GitHub Issues](https://github.com/Goodnessmbakara/xonora/issues)
 
 ## 🏆 Hackathon Submission
 
