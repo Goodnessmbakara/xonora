@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="xonoraGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="url(#xonoraGradient)" stroke="#1f2937" stroke-width="1"/>
+  
+  <!-- X shape -->
+  <path d="M10 10 L22 22 M22 10 L10 22" stroke="#1f2937" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Growth circles -->
+  <circle cx="24" cy="8" r="2" fill="#1f2937" opacity="0.8"/>
+  <circle cx="8" cy="24" r="1.5" fill="#1f2937" opacity="0.9"/>
+  <circle cx="26" cy="18" r="1" fill="#1f2937" opacity="0.7"/>
+</svg>
