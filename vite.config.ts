@@ -19,4 +19,12 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    'process.env.CANISTER_ID_XONORA_BACKEND': JSON.stringify('uxrrr-q7777-77774-qaaaq-cai'),
+    'process.env.DFX_NETWORK': JSON.stringify(mode === 'production' ? 'ic' : 'local'),
+    global: 'globalThis',
+  },
+  optimizeDeps: {
+    include: ['@dfinity/agent', '@dfinity/auth-client', '@dfinity/identity', '@dfinity/principal'],
+  },
 }));

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import WalletConnection from '../components/WalletConnection';
 
 const Dashboard = () => {
   const { isAuthenticated } = useAuth();
@@ -24,24 +25,13 @@ const Dashboard = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="mb-6">
-            <svg viewBox="0 0 120 120" className="w-24 h-24 mx-auto">
-              <defs>
-                <linearGradient id="walletGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#f97316" />
-                  <stop offset="100%" stopColor="#eab308" />
-                </linearGradient>
-              </defs>
-              <rect x="20" y="40" width="80" height="40" rx="8" fill="none" stroke="url(#walletGradient)" strokeWidth="3" />
-              <circle cx="35" cy="60" r="3" fill="url(#walletGradient)" />
-              <path d="M45 55 L75 55 M45 65 L65 65" stroke="url(#walletGradient)" strokeWidth="2" strokeLinecap="round" />
-              <path d="M85 50 L95 60 L85 70" stroke="url(#walletGradient)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+        <div className="max-w-md w-full">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-4">Dashboard Access</h1>
+            <p className="text-gray-400">Connect your Internet Identity wallet to view your dashboard and manage your Bitcoin yield farming positions.</p>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-4">Please connect your wallet</h1>
-          <p className="text-gray-400">You need to be authenticated to view your dashboard.</p>
+          <WalletConnection showFullInterface={true} />
         </div>
       </div>
     );

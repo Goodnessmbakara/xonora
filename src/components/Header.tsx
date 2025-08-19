@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import Logo from './Logo';
+import WalletConnection from './WalletConnection';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, login, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -61,29 +62,15 @@ const Header = () => {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
-                <a
-                  href="/staking"
-                  className="px-6 py-2 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark font-semibold rounded-lg hover:scale-105 transition-all duration-300"
-                >
-                  Stake Now
-                </a>
-                <button
-                  onClick={logout}
-                  className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={login}
-                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
+            {isAuthenticated && (
+              <a
+                href="/staking"
+                className="px-6 py-2 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark font-semibold rounded-lg hover:scale-105 transition-all duration-300"
               >
-                Connect Wallet
-              </button>
+                Stake Now
+              </a>
             )}
+            <WalletConnection />
           </div>
 
           {/* Mobile Menu Button */}
@@ -149,36 +136,18 @@ const Header = () => {
                   Dashboard
                 </a>
               ) : null}
-              {isAuthenticated ? (
-                <div className="flex flex-col space-y-2">
+              <div className="space-y-4">
+                {isAuthenticated && (
                   <a
                     href="/staking"
-                    className="px-6 py-2 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark font-semibold rounded-lg text-center"
+                    className="px-6 py-2 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark font-semibold rounded-lg text-center block"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Stake Now
                   </a>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 text-left"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => {
-                    login();
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400 text-left"
-                >
-                  Connect Wallet
-                </button>
-              )}
+                )}
+                <WalletConnection className="w-full" />
+              </div>
             </nav>
           </div>
         )}

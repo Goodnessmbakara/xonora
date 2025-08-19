@@ -9,6 +9,7 @@ import Staking from "./pages/Staking";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

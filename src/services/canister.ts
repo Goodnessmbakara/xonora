@@ -3,6 +3,7 @@ import { AuthClient } from '@dfinity/auth-client';
 import { InternetIdentity } from '@dfinity/auth-client/lib/cjs/providers/internet-identity';
 import { idlFactory } from '../declarations/xonora_backend/xonora_backend.did.js';
 import type { _SERVICE as Xonora } from '../declarations/xonora_backend/xonora_backend.did.d.ts';
+import { getCanisterId, getICHost, getIdentityProvider } from '../config/canister';
 
 // Types
 export interface Pool {
@@ -49,41 +50,90 @@ class CanisterService {
       this.authClient = await AuthClient.create({
         idleOptions: {
           disableDefaultIdleCallback: true,
+          idleTimeout: 1000 * 60 * 30, // 30 minutes
         },
       });
 
-      // Check if user is authenticated
+      // Check if user is already authenticated
       const isAuthenticated = await this.authClient.isAuthenticated();
       
-      if (!isAuthenticated) {
-        await this.login();
+      if (isAuthenticated) {
+        await this.setupActorWithIdentity();
       }
 
-      // Create agent
+      console.log('Canister service initialized', { isAuthenticated });
+      return true;
+    } catch (error) {
+      console.error('Failed to initialize canister service:', error);
+      return false;
+    }
+  }
+
+  private async setupActorWithIdentity() {
+    if (!this.authClient) {
+      throw new Error('Auth client not initialized');
+    }
+
+    try {
+      const identity = this.authClient.getIdentity();
+      const principal = identity.getPrincipal();
+      console.log('Setting up actor with identity:', principal.toText());
+
+      // Create agent with authenticated identity
+      const host = getICHost();
+      console.log('Creating agent with host:', host);
+      
+      // Create agent with completely disabled verification for local development
       this.agent = new HttpAgent({
-        identity: this.authClient.getIdentity(),
-        host: process.env.NODE_ENV === 'production' 
-          ? 'https://ic0.app' 
-          : 'http://127.0.0.1:8000',
+        identity,
+        host,
+        // Disable ALL signature verification for local development
+        verifyQuerySignatures: false,
+        // Disable update call verification
+        disableNonce: true,
       });
 
-      // Set canister ID for local development
-      const LOCAL_CANISTER_ID = "uxrrr-q7777-77774-qaaaq-cai";
-      this.canisterId = process.env.NODE_ENV === 'production' 
-        ? (process.env.VITE_CANISTER_ID || 'rrkah-fqaaa-aaaaa-aaaaq-cai')
-        : LOCAL_CANISTER_ID;
+      // Always fetch root key for local development to avoid certificate issues
+      if (import.meta.env.DEV === true) {
+        console.log('Fetching root key for local development...');
+        try {
+          await this.agent.fetchRootKey();
+          console.log('Root key fetched successfully');
+          
+          // Additional step: Disable certificate verification at the agent level
+          (this.agent as any).rootKey = await this.agent.rootKey;
+          console.log('Agent configured for local development');
+        } catch (err) {
+          console.error('Root key fetch failed:', {
+            error: err,
+            message: err?.message,
+            name: err?.name,
+            host: getICHost()
+          });
+          // For local development, we need the root key - throw error if it fails
+          throw new Error(`Failed to fetch root key for local development: ${err?.message || err}`);
+        }
+      }
+
+      // Set canister ID
+      this.canisterId = getCanisterId('xonora_backend');
+      console.log('Using backend canister ID:', this.canisterId);
 
       // Create actor
+      console.log('Creating actor...');
       this.actor = Actor.createActor<Xonora>(idlFactory, {
         agent: this.agent,
         canisterId: this.canisterId,
       });
 
-      console.log('Canister service initialized');
-      return true;
+      console.log('Actor setup complete successfully', { 
+        canisterId: this.canisterId,
+        principal: principal.toText(),
+        host 
+      });
     } catch (error) {
-      console.error('Failed to initialize canister service:', error);
-      return false;
+      console.error('Error in setupActorWithIdentity:', error);
+      throw error;
     }
   }
 
@@ -92,13 +142,28 @@ class CanisterService {
       throw new Error('Auth client not initialized');
     }
 
+    const identityProvider = getIdentityProvider();
+    console.log('Starting login with identity provider:', identityProvider);
+
     return new Promise((resolve, reject) => {
       this.authClient!.login({
-        identityProvider: process.env.NODE_ENV === 'production'
-          ? 'https://identity.ic0.app'
-          : 'http://127.0.0.1:8000?canisterId=ulvla-h7777-77774-qaacq-cai',
-        onSuccess: () => resolve(),
-        onError: (error) => reject(error),
+        identityProvider,
+        onSuccess: async () => {
+          try {
+            console.log('Login successful, setting up actor...');
+            await this.setupActorWithIdentity();
+            console.log('Actor setup complete');
+            resolve();
+          } catch (error) {
+            console.error('Error setting up actor after login:', error);
+            reject(error);
+          }
+        },
+        onError: (error) => {
+          console.error('Login failed:', error);
+          reject(error);
+        },
+        windowOpenerFeatures: 'toolbar=0,location=0,menubar=0,width=500,height=500,left=100,top=100',
       });
     });
   }
@@ -106,11 +171,14 @@ class CanisterService {
   async logout(): Promise<void> {
     if (this.authClient) {
       await this.authClient.logout();
+      // Clear actor and agent after logout
+      this.actor = null;
+      this.agent = null;
     }
   }
 
   getPrincipal(): string | null {
-    if (this.authClient) {
+    if (this.authClient && this.isAuthenticated()) {
       return this.authClient.getIdentity().getPrincipal().toText();
     }
     return null;
@@ -118,6 +186,42 @@ class CanisterService {
 
   isAuthenticated(): boolean {
     return this.authClient?.isAuthenticated() || false;
+  }
+
+  getConnectionStatus(): 'disconnected' | 'connecting' | 'connected' | 'error' {
+    if (!this.authClient) {
+      console.log('Connection status: no auth client');
+      return 'disconnected';
+    }
+    
+    const isAuth = this.isAuthenticated();
+    const hasActor = !!this.actor;
+    
+    console.log('Connection status check:', { isAuth, hasActor });
+    
+    if (isAuth && hasActor) return 'connected';
+    if (isAuth && !hasActor) return 'error';
+    return 'disconnected';
+  }
+
+  getCanisterId(): string | null {
+    return this.canisterId;
+  }
+
+  async retryConnection(): Promise<boolean> {
+    try {
+      if (!this.authClient || !this.isAuthenticated()) {
+        console.log('Cannot retry: not authenticated');
+        return false;
+      }
+      
+      console.log('Retrying actor setup...');
+      await this.setupActorWithIdentity();
+      return true;
+    } catch (error) {
+      console.error('Retry connection failed:', error);
+      return false;
+    }
   }
 
   // Backend API calls

@@ -1,96 +1,138 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import WalletConnection from '../components/WalletConnection';
+import { canisterService } from '../services/canister';
+import type { Pool, Stake } from '../services/canister';
 
 const Staking = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, principal } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPool, setSelectedPool] = useState('balanced');
   const [stakeAmount, setStakeAmount] = useState('');
-  const [userStakes, setUserStakes] = useState([
-    { id: 1, pool: 'balanced', amount: 0.5, apy: 10.5, startDate: '2024-01-10', earned: 0.023 },
-    { id: 2, pool: 'aggressive', amount: 1.2, apy: 15.2, startDate: '2024-01-05', earned: 0.045 }
-  ]);
+  const [pools, setPools] = useState<Pool[]>([]);
+  const [userStakes, setUserStakes] = useState<Stake[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const pools = [
-    {
-      id: 'stable',
-      name: 'Stable Pool',
-      apy: 5.0,
-      risk: 'Low',
-      description: 'Conservative strategy with stable returns',
-      maxCapacity: 1000,
-      totalStaked: 450
-    },
-    {
-      id: 'balanced',
-      name: 'Balanced Pool',
-      apy: 10.0,
-      risk: 'Medium',
-      description: 'Balanced risk and reward strategy',
-      maxCapacity: 1000,
-      totalStaked: 750
-    },
-    {
-      id: 'aggressive',
-      name: 'Aggressive Pool',
-      apy: 15.0,
-      risk: 'High',
-      description: 'High-risk, high-reward strategy',
-      maxCapacity: 1000,
-      totalStaked: 300
+  // Load pools and user stakes from backend
+  const loadData = async () => {
+    try {
+      setLoadingData(true);
+      setError(null);
+      
+      console.log('Loading pools and user stakes...');
+      
+      // Load pools
+      const poolsData = await canisterService.getPools();
+      console.log('Loaded pools:', poolsData);
+      setPools(poolsData);
+      
+      // Load user stakes if authenticated
+      if (isAuthenticated && principal) {
+        try {
+          const stakesData = await canisterService.getUserStakes(principal);
+          console.log('Loaded user stakes:', stakesData);
+          setUserStakes(stakesData);
+        } catch (err) {
+          console.warn('Failed to load user stakes:', err);
+          // Don't fail the whole load if user stakes fail
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load data');
+    } finally {
+      setLoadingData(false);
     }
-  ];
+  };
 
-  const handleStake = async (e: React.FormEvent) => {
+    const handleStake = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!stakeAmount || parseFloat(stakeAmount) <= 0) return;
 
     setIsLoading(true);
+    setError(null); // Clear any previous errors
+    
     try {
-      // Simulate staking process
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Add new stake to user stakes
-      const newStake = {
-        id: Date.now(),
-        pool: selectedPool,
-        amount: parseFloat(stakeAmount),
-        apy: pools.find(p => p.id === selectedPool)?.apy || 10,
-        startDate: new Date().toISOString().split('T')[0],
-        earned: 0
-      };
-      
-      setUserStakes([...userStakes, newStake]);
-      setStakeAmount('');
-      alert('Successfully staked!');
+      console.log('=== STAKING ATTEMPT ===');
+      console.log('Amount:', stakeAmount, 'Pool:', selectedPool);
+
+      // Convert amount to satoshis (multiply by 100,000,000)
+      const amountInSatoshis = BigInt(Math.floor(parseFloat(stakeAmount) * 100_000_000));
+      console.log('Amount in satoshis:', amountInSatoshis.toString());
+
+      // Check if we're properly authenticated first
+      if (!canisterService.isAuthenticated()) {
+        throw new Error('Not authenticated. Please connect your wallet first.');
+      }
+
+      const result = await canisterService.stake(amountInSatoshis, selectedPool);
+      console.log('Stake result:', result);
+
+      if ('ok' in result) {
+        console.log('✅ Stake successful, ID:', result.ok);
+        alert(`Successfully staked! Stake ID: ${result.ok}`);
+        setStakeAmount('');
+        // Reload data to show new stake
+        await loadData();
+      } else {
+        throw new Error(result.err || 'Staking failed');
+      }
     } catch (error) {
-      alert('Staking failed. Please try again.');
+      console.error('❌ Staking error:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(`Staking failed: ${errorMessage}`);
+      
+      // If it's a certificate error, provide specific guidance
+      if (errorMessage.includes('certificate') || errorMessage.includes('signature')) {
+        setError(`Certificate error: ${errorMessage}. Try refreshing the page and reconnecting your wallet.`);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleUnstake = async (stakeId: number) => {
+  const handleUnstake = async (stakeId: bigint) => {
     setIsLoading(true);
     try {
-      // Simulate unstaking process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('Unstaking stake ID:', stakeId);
       
-      setUserStakes(userStakes.filter(stake => stake.id !== stakeId));
-      alert('Successfully unstaked!');
+      const result = await canisterService.unstake(Number(stakeId));
+      console.log('Unstake result:', result);
+      
+      if ('ok' in result) {
+        const amountInBTC = Number(result.ok) / 100_000_000;
+        console.log('Unstake successful, amount:', amountInBTC);
+        alert(`Successfully unstaked! Received: ${amountInBTC.toFixed(8)} BTC`);
+        // Reload data to update stakes
+        await loadData();
+      } else {
+        throw new Error(result.err || 'Unstaking failed');
+      }
     } catch (error) {
-      alert('Unstaking failed. Please try again.');
+      console.error('Unstaking error:', error);
+      alert(`Unstaking failed: ${error instanceof Error ? error.message : error}`);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Load data on component mount and when authentication changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadData();
+    }
+  }, [isAuthenticated, principal]);
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Please connect your wallet</h1>
-          <p className="text-gray-400">You need to be authenticated to access staking.</p>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+        <div className="max-w-md w-full">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-4">Staking Access</h1>
+            <p className="text-gray-400">Connect your Internet Identity wallet to start staking your Bitcoin and earning yields through our AI-optimized pools.</p>
+          </div>
+          <WalletConnection showFullInterface={true} />
         </div>
       </div>
     );
@@ -109,10 +151,32 @@ const Staking = () => {
           </p>
         </div>
 
-        {isLoading && (
+        {(isLoading || loadingData) && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-gray-800 rounded-lg p-8 text-center">
-              <div className="text-xonora-primary-400">Loading...</div>
+              <div className="text-xonora-primary-400">
+                {loadingData ? 'Loading pools and stakes...' : 'Processing...'}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 rounded-lg p-4 mb-6">
+            <div className="text-red-400 mb-2">Error: {error}</div>
+            <div className="space-x-2">
+              <button 
+                onClick={loadData}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Retry
+              </button>
+              <button 
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+              >
+                Refresh Page
+              </button>
             </div>
           </div>
         )}
@@ -131,38 +195,52 @@ const Staking = () => {
                   Select Pool
                 </label>
                 <div className="grid gap-3">
-                  {pools.map((pool) => (
-                    <label
-                      key={pool.id}
-                      className={`relative cursor-pointer p-4 rounded-lg border-2 transition-all duration-300 ${
-                        selectedPool === pool.id
-                          ? "border-xonora-primary-400 bg-xonora-primary-400/10"
-                          : "border-yield-gray-600 hover:border-xonora-primary-400/50"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="pool"
-                        value={pool.id}
-                        checked={selectedPool === pool.id}
-                        onChange={(e) => setSelectedPool(e.target.value)}
-                        className="sr-only"
-                      />
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h4 className="font-semibold text-white">{pool.name}</h4>
-                          <p className="text-sm text-gray-400">{pool.description}</p>
-                          <span className="text-xs text-gray-500">Risk: {pool.risk}</span>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-xonora-primary-400 mb-2">
-                            {pool.apy}%
+                  {pools.map((pool) => {
+                    const utilizationPercent = pool.maxCapacity > 0n 
+                      ? (Number(pool.totalStaked) / Number(pool.maxCapacity)) * 100 
+                      : 0;
+                    
+                    return (
+                      <label
+                        key={pool.id}
+                        className={`relative cursor-pointer p-4 rounded-lg border-2 transition-all duration-300 ${
+                          selectedPool === pool.id
+                            ? "border-xonora-primary-400 bg-xonora-primary-400/10"
+                            : "border-yield-gray-600 hover:border-xonora-primary-400/50"
+                        } ${!pool.isActive ? "opacity-50 cursor-not-allowed" : ""}`}
+                      >
+                        <input
+                          type="radio"
+                          name="pool"
+                          value={pool.id}
+                          checked={selectedPool === pool.id}
+                          onChange={(e) => setSelectedPool(e.target.value)}
+                          disabled={!pool.isActive}
+                          className="sr-only"
+                        />
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h4 className="font-semibold text-white">{pool.name}</h4>
+                            <div className="text-xs text-gray-500 mt-1">
+                              Capacity: {utilizationPercent.toFixed(1)}% used
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Total Staked: {(Number(pool.totalStaked) / 100_000_000).toFixed(8)} BTC
+                            </div>
+                            {!pool.isActive && (
+                              <span className="text-xs text-red-400">Inactive</span>
+                            )}
                           </div>
-                          <div className="text-sm text-gray-400">APY</div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-xonora-primary-400 mb-2">
+                              {pool.apy}%
+                            </div>
+                            <div className="text-sm text-gray-400">APY</div>
+                          </div>
                         </div>
-                      </div>
-                    </label>
-                  ))}
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -238,40 +316,54 @@ const Staking = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {userStakes.map((stake) => (
-                  <div key={stake.id} className="bg-gray-700 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 className="font-semibold text-white capitalize">{stake.pool} Pool</h4>
-                        <p className="text-sm text-gray-400">Started: {stake.startDate}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-xonora-primary-400">
-                          {stake.apy}% APY
+                {userStakes.map((stake) => {
+                  const pool = pools.find(p => p.id === stake.poolId);
+                  const stakeAmountBTC = Number(stake.amount) / 100_000_000;
+                  const startDate = new Date(Number(stake.startTime) / 1_000_000).toLocaleDateString();
+                  
+                  return (
+                    <div key={Number(stake.id)} className="bg-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold text-white capitalize">{pool?.name || stake.poolId}</h4>
+                          <p className="text-sm text-gray-400">Started: {startDate}</p>
+                          <p className="text-sm text-gray-400">Stake ID: {Number(stake.id)}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-xonora-primary-400">
+                            {pool?.apy || 0}% APY
+                          </div>
+                          <div className={`text-sm ${stake.isActive ? 'text-green-400' : 'text-red-400'}`}>
+                            {stake.isActive ? 'Active' : 'Inactive'}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <p className="text-sm text-gray-400">Staked Amount</p>
-                        <p className="font-semibold text-white">{stake.amount} ckBTC</p>
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <p className="text-sm text-gray-400">Staked Amount</p>
+                          <p className="font-semibold text-white">{stakeAmountBTC.toFixed(8)} BTC</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-400">Status</p>
+                          <p className={`font-semibold ${stake.isActive ? 'text-green-400' : 'text-gray-400'}`}>
+                            {stake.isActive ? 'Earning' : 'Completed'}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm text-gray-400">Earned</p>
-                        <p className="font-semibold text-xonora-primary-400">{stake.earned} ckBTC</p>
-                      </div>
-                    </div>
 
-                    <button
-                      onClick={() => handleUnstake(stake.id)}
-                      disabled={isLoading}
-                      className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isLoading ? 'Processing...' : 'Unstake'}
-                    </button>
-                  </div>
-                ))}
+                      {stake.isActive && (
+                        <button
+                          onClick={() => handleUnstake(stake.id)}
+                          disabled={isLoading}
+                          className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isLoading ? 'Processing...' : 'Unstake'}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

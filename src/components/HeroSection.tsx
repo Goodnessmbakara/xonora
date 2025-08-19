@@ -1,7 +1,11 @@
 
 import React from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import WalletConnection from './WalletConnection';
 
 const HeroSection = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <section id="home" className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center overflow-hidden">
       {/* Floating Bitcoin symbols */}
@@ -21,12 +25,22 @@ const HeroSection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="px-8 py-4 border-2 border-xonora-primary-400 text-xonora-primary-400 rounded-lg font-semibold hover:bg-xonora-primary-400 hover:text-xonora-dark transition-all duration-300">
-              Start Earning Now
-            </button>
-            <button className="px-8 py-4 border-2 border-gray-600 text-gray-300 rounded-lg font-semibold hover:border-xonora-primary-400 hover:text-xonora-primary-400 transition-all duration-300">
+            {isAuthenticated ? (
+              <a
+                href="/staking"
+                className="px-8 py-4 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark rounded-lg font-semibold hover:scale-105 transition-all duration-300"
+              >
+                Start Earning Now
+              </a>
+            ) : (
+              <WalletConnection />
+            )}
+            <a
+              href="#features"
+              className="px-8 py-4 border-2 border-gray-600 text-gray-300 rounded-lg font-semibold hover:border-xonora-primary-400 hover:text-xonora-primary-400 transition-all duration-300"
+            >
               Learn More
-            </button>
+            </a>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
