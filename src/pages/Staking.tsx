@@ -40,7 +40,14 @@ const Staking = () => {
       }
     } catch (err) {
       console.error('Failed to load data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load data');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
+      
+      // Check if this is a production environment issue
+      if (import.meta.env.PROD && (errorMessage.includes('signature') || errorMessage.includes('certificate') || errorMessage.includes('Invalid canister'))) {
+        setError('🚧 Backend Not Yet Deployed: The Xonora backend canister is not yet deployed to IC mainnet. For testing, please use the local development version at localhost:8080');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoadingData(false);
     }
@@ -85,7 +92,11 @@ const Staking = () => {
       
       // If it's a certificate error, provide specific guidance
       if (errorMessage.includes('certificate') || errorMessage.includes('signature')) {
-        setError(`Certificate error: ${errorMessage}. Try refreshing the page and reconnecting your wallet.`);
+        if (import.meta.env.PROD) {
+          setError('🚧 Backend Not Yet Deployed: The Xonora backend canister is not yet deployed to IC mainnet. For testing, please use the local development version at localhost:8080');
+        } else {
+          setError(`Certificate error: ${errorMessage}. Try refreshing the page and reconnecting your wallet.`);
+        }
       }
     } finally {
       setIsLoading(false);
@@ -141,6 +152,22 @@ const Staking = () => {
   return (
     <div className="min-h-screen bg-gray-900 pt-20">
       <div className="container mx-auto px-6 py-8">
+        {/* Production Warning Banner */}
+        {import.meta.env.PROD && (
+          <div className="mb-6 bg-yellow-600/20 border border-yellow-500 rounded-lg p-4">
+            <div className="flex items-center">
+              <span className="text-yellow-400 text-xl mr-2">⚠️</span>
+              <div>
+                <div className="text-yellow-400 font-semibold">Demo Version</div>
+                <div className="text-yellow-200 text-sm">
+                  The backend canister is not yet deployed to IC mainnet. 
+                  For full functionality, please use the local development version.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-4 text-white">

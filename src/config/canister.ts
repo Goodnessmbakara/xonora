@@ -8,7 +8,9 @@ export const CANISTER_IDS = {
   },
   // Production canister IDs (to be updated when deployed)
   ic: {
-    xonora_backend: import.meta.env.VITE_CANISTER_ID_XONORA_BACKEND || 'rrkah-fqaaa-aaaaa-aaaaq-cai',
+    // Use a known working canister ID for now (Internet Computer Association's NNS canister)
+    // TODO: Replace with actual deployed backend canister ID
+    xonora_backend: import.meta.env.VITE_CANISTER_ID_XONORA_BACKEND || 'rdmx6-jaaaa-aaaaa-aaadq-cai',
     internet_identity: 'rdmx6-jaaaa-aaaaa-aaadq-cai',
   }
 };

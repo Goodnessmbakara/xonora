@@ -83,14 +83,14 @@ class CanisterService {
       const host = getICHost();
       console.log('Creating agent with host:', host);
       
-      // Create agent with completely disabled verification for local development
+      // Create agent with environment-appropriate configuration
       this.agent = new HttpAgent({
         identity,
         host,
-        // Disable ALL signature verification for local development
-        verifyQuerySignatures: false,
-        // Disable update call verification
-        disableNonce: true,
+        // Only disable signature verification for local development
+        verifyQuerySignatures: import.meta.env.PROD === true,
+        // Only disable nonce for local development
+        ...(import.meta.env.DEV && { disableNonce: true }),
       });
 
       // Always fetch root key for local development to avoid certificate issues
