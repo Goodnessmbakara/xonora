@@ -2,7 +2,7 @@ import { Actor, HttpAgent } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
 import { idlFactory } from '../declarations/xonora_backend/xonora_backend.did.js';
 import type { _SERVICE as Xonora } from '../declarations/xonora_backend/xonora_backend.did.d.ts';
-import { getCanisterId, getICHost, getIdentityProvider, getNetwork, getNetworkSync, isProduction, validateEnvironment } from '../config/canister';
+import { getCanisterId, getICHost, getIdentityProvider, getNetwork, isProduction, validateEnvironment } from '../config/canister';
 import { 
   poolsCache, 
   portfolioCache, 
@@ -75,8 +75,8 @@ class CanisterService {
       // Validate environment variables first
       validateEnvironment();
       
-      const network = await getNetwork();
-      console.log(`Initializing canister service for network: ${network}`);
+      const network = getNetwork();
+      console.log(`Initializing canister service for mainnet deployment`);
       
       // Initialize auth client
       this.authClient = await AuthClient.create({
@@ -93,7 +93,7 @@ class CanisterService {
         await this.setupActorWithIdentity();
       }
 
-      console.log(`Canister service initialized for network: ${network}`, { isAuthenticated });
+      console.log(`Canister service initialized for mainnet deployment`, { isAuthenticated });
       return true;
     } catch (error) {
       console.error('Failed to initialize canister service:', error);
@@ -118,35 +118,14 @@ class CanisterService {
       const host = getICHost();
       console.log('Creating agent with host:', host);
       
-      // Create agent with environment-appropriate configuration
+      // Create agent for mainnet deployment
       this.agent = new HttpAgent({
         identity,
         host,
-        // Enable signature verification for production, disable for local development
-        verifyQuerySignatures: isProduction(),
-        // Only disable nonce for local development
-        ...(!isProduction() && { disableNonce: true }),
+        verifyQuerySignatures: true, // Always verify signatures for mainnet
       });
 
-      // Only fetch root key for local development to avoid certificate issues
-      if (!isProduction()) {
-        console.log('Fetching root key for local development...');
-        try {
-          await this.agent.fetchRootKey();
-          console.log('Root key fetched successfully');
-          
-          console.log('Agent configured for local development');
-        } catch (err) {
-          console.error('Root key fetch failed:', {
-            error: err,
-            message: err?.message,
-            name: err?.name,
-            host: getICHost()
-          });
-          // For local development, we need the root key - throw error if it fails
-          throw new Error(`Failed to fetch root key for local development: ${err?.message || err}`);
-        }
-      }
+      console.log('Agent configured for mainnet deployment');
 
       // Set canister ID
       this.canisterId = getCanisterId('xonora_backend');
@@ -248,8 +227,8 @@ class CanisterService {
         return false;
       }
       
-      const network = await getNetwork();
-      console.log(`Retrying actor setup for network: ${network}...`);
+      const network = getNetwork();
+      console.log(`Retrying actor setup for mainnet deployment...`);
       
       // Validate environment before retry
       validateEnvironment();

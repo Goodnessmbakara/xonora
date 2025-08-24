@@ -1,104 +1,120 @@
-# Environment Variables
+# Environment Configuration for Mainnet Deployment
 
-This document lists the required environment variables for the Xonora project.
+This document describes the environment variables required for deploying Xonora to the Internet Computer mainnet.
 
-## Required vs Optional Variables
+## Required Environment Variables
 
-### Required Variables (Production)
-- `VITE_CANISTER_ID_XONORA_BACKEND`: The deployed backend canister ID
-- `VITE_NETWORK`: Network configuration ('local' or 'ic')
-
-### Optional Variables
-- `VITE_IC_HOST`: Custom IC host URL (defaults to 'https://ic0.app' for production, 'http://127.0.0.1:8000' for local)
-- `VITE_IDENTITY_PROVIDER`: Custom Internet Identity provider URL (defaults to 'https://identity.ic0.app')
-- `VITE_CANISTER_ID_INTERNET_IDENTITY`: Custom Internet Identity canister ID (defaults to production II)
-
-## Environment Configuration
-
-### Development
+### Network Configuration
 ```bash
-# Required
-VITE_NETWORK=local
-
-# Optional - for local development
-VITE_IC_HOST=http://127.0.0.1:8000
-VITE_IDENTITY_PROVIDER=https://identity.ic0.app
-```
-
-### Production
-```bash
-# Required
-VITE_CANISTER_ID_XONORA_BACKEND=your_production_backend_canister_id
 VITE_NETWORK=ic
+```
+- **Purpose**: Specifies the network to use
+- **Value**: Always `ic` for mainnet deployment
+- **Required**: Yes
 
-# Optional
-VITE_IC_HOST=https://ic0.app
-VITE_IDENTITY_PROVIDER=https://identity.ic0.app
+### Backend Canister ID
+```bash
+VITE_CANISTER_ID_XONORA_BACKEND=your-deployed-canister-id-here
+```
+- **Purpose**: The deployed backend canister ID on mainnet
+- **Format**: Canister ID (e.g., `abc123-def456-ghi789-jkl012-mno345-pqr678-stu901-vwx234-yz567`)
+- **Required**: Yes
+- **How to get**: Deploy the backend canister using `dfx deploy --network ic`
+
+### Internet Identity Configuration
+```bash
 VITE_CANISTER_ID_INTERNET_IDENTITY=rdmx6-jaaaa-aaaaa-aaadq-cai
 ```
+- **Purpose**: The mainnet Internet Identity canister ID
+- **Value**: Fixed mainnet canister ID
+- **Required**: No (defaults to mainnet ID)
 
-## CI/CD Setup
-
-When setting up CI/CD pipelines, ensure the following environment variables are configured:
-
-### Example GitHub Actions Environment Variables
-
-```yaml
-env:
-  VITE_CANISTER_ID_XONORA_BACKEND: ${{ secrets.VITE_CANISTER_ID_XONORA_BACKEND }}
-  VITE_NETWORK: ic
-  VITE_IC_HOST: https://ic0.app
-```
-
-### Example Vercel Environment Variables
-
-```
-VITE_CANISTER_ID_XONORA_BACKEND=your_production_backend_canister_id
-VITE_NETWORK=ic
+### IC Host Configuration
+```bash
 VITE_IC_HOST=https://ic0.app
 ```
+- **Purpose**: The Internet Computer mainnet host URL
+- **Value**: Mainnet host URL
+- **Required**: No (defaults to mainnet URL)
 
-## Getting Canister IDs
-
-After deploying with `dfx deploy`, the canister IDs can be found in:
-
-- `.dfx/local/canister_ids.json` (local development)
-- `.dfx/ic/canister_ids.json` (mainnet deployment)
-
-Or by running:
+### Identity Provider
 ```bash
-dfx canister id xonora_backend
+VITE_IDENTITY_PROVIDER=https://identity.ic0.app
 ```
+- **Purpose**: The Internet Identity provider URL
+- **Value**: Mainnet identity provider URL
+- **Required**: No (defaults to mainnet URL)
+
+## Deployment Setup
+
+### 1. Deploy Backend Canister
+```bash
+# Build and deploy to mainnet
+dfx build --network ic
+dfx deploy --network ic --no-wallet
+
+# Get the deployed canister ID
+dfx canister id xonora_backend --network ic
+```
+
+### 2. Set Environment Variables
+Set the following environment variables in your deployment platform:
+
+```bash
+VITE_NETWORK=ic
+VITE_CANISTER_ID_XONORA_BACKEND=<your-deployed-canister-id>
+VITE_CANISTER_ID_INTERNET_IDENTITY=rdmx6-jaaaa-aaaaa-aaadq-cai
+VITE_IC_HOST=https://ic0.app
+VITE_IDENTITY_PROVIDER=https://identity.ic0.app
+```
+
+### 3. Deploy Frontend
+```bash
+# Build for production
+npm run build
+
+# Deploy to your preferred platform (Vercel, Netlify, etc.)
+```
+
+## Platform-Specific Setup
+
+### Vercel
+1. Go to your project settings
+2. Add environment variables in the "Environment Variables" section
+3. Deploy your project
+
+### Netlify
+1. Go to your site settings
+2. Add environment variables in the "Environment variables" section
+3. Deploy your site
+
+### IC Frontend
+1. Set environment variables in your deployment configuration
+2. Deploy using the IC frontend canister
 
 ## Troubleshooting
 
-### Common Issues
+### Missing Canister ID
+If you see an error about missing `VITE_CANISTER_ID_XONORA_BACKEND`:
+1. Deploy your backend canister first
+2. Copy the canister ID from the deployment output
+3. Set the environment variable with the correct canister ID
 
-1. **Missing Environment Variables**: The application will show helpful error messages if required variables are missing
-2. **Network Configuration**: Ensure `VITE_NETWORK` is set correctly for your environment
-3. **Canister ID Format**: Verify that canister IDs follow the correct format (e.g., `uxrrr-q7777-77774-qaaaq-cai`)
+### Authentication Issues
+If users can't authenticate:
+1. Verify `VITE_IDENTITY_PROVIDER` is set to `https://identity.ic0.app`
+2. Ensure `VITE_CANISTER_ID_INTERNET_IDENTITY` is set correctly
+3. Check that your backend canister is properly deployed
 
-### Validation Commands
+### Network Issues
+If the app can't connect to the IC:
+1. Verify `VITE_IC_HOST` is set to `https://ic0.app`
+2. Check that your backend canister is accessible
+3. Ensure your deployment platform allows HTTPS connections
 
-Check if environment variables are properly set:
-```bash
-# Check if VITE_ variables are available
-echo $VITE_CANISTER_ID_XONORA_BACKEND
-echo $VITE_NETWORK
+## Security Notes
 
-# For local development, check DFX canister IDs
-dfx canister id xonora_backend
-```
-
-### Example .env.local (Development)
-```bash
-VITE_NETWORK=local
-VITE_IC_HOST=http://127.0.0.1:8000
-```
-
-### Example .env.production (Production)
-```bash
-VITE_CANISTER_ID_XONORA_BACKEND=your_actual_canister_id
-VITE_NETWORK=ic
-VITE_IC_HOST=https://ic0.app
-```
+- Never commit environment variables to version control
+- Use secure environment variable management in your deployment platform
+- Regularly rotate any sensitive credentials
+- Monitor your canister for unusual activity
