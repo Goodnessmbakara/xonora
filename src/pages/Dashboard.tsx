@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import IdentityConnection from '../components/IdentityConnection';
 import { canisterService } from '../services/canister';
-import type { Portfolio, Stake } from '../services/canister';
+import type { Portfolio, Stake, Pool } from '../services/canister';
 
 interface Transaction {
   id: number;
@@ -16,17 +16,86 @@ const Dashboard = () => {
   const { isAuthenticated, principal } = useAuth();
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [userStakes, setUserStakes] = useState<Stake[]>([]);
+  const [pools, setPools] = useState<Pool[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Helper function to calculate weighted APY based on user's stakes
+  const calculateWeightedAPY = (stakes: Stake[], pools: Pool[]): number => {
+    if (stakes.length === 0 || pools.length === 0) return 0;
+    
+    const activeStakes = stakes.filter(stake => stake.isActive);
+    if (activeStakes.length === 0) return 0;
+    
+    let totalStakedAmount = 0n;
+    let weightedAPYSum = 0n;
+    
+    activeStakes.forEach(stake => {
+      const pool = pools.find(p => p.id === stake.poolId);
+      if (pool) {
+        totalStakedAmount += stake.amount;
+        weightedAPYSum += stake.amount * BigInt(Math.floor(pool.apy * 100)); // APY as basis points
+      }
+    });
+    
+    if (totalStakedAmount === 0n) return 0;
+    
+    const weightedAPY = Number(weightedAPYSum) / Number(totalStakedAmount) / 100;
+    return Math.round(weightedAPY * 100) / 100; // Round to 2 decimal places
+  };
+
+  // Helper function to calculate daily earnings
+  const calculateDailyEarnings = (stakes: Stake[], pools: Pool[]): number => {
+    if (stakes.length === 0 || pools.length === 0) return 0;
+    
+    const activeStakes = stakes.filter(stake => stake.isActive);
+    if (activeStakes.length === 0) return 0;
+    
+    let totalDailyEarnings = 0;
+    
+    activeStakes.forEach(stake => {
+      const pool = pools.find(p => p.id === stake.poolId);
+      if (pool) {
+        const stakeAmount = Number(stake.amount) / 100_000_000;
+        const dailyRate = pool.apy / 100 / 365;
+        totalDailyEarnings += stakeAmount * dailyRate;
+      }
+    });
+    
+    return totalDailyEarnings;
+  };
+
+  // Helper function to calculate monthly earnings
+  const calculateMonthlyEarnings = (stakes: Stake[], pools: Pool[]): number => {
+    if (stakes.length === 0 || pools.length === 0) return 0;
+    
+    const activeStakes = stakes.filter(stake => stake.isActive);
+    if (activeStakes.length === 0) return 0;
+    
+    let totalMonthlyEarnings = 0;
+    
+    activeStakes.forEach(stake => {
+      const pool = pools.find(p => p.id === stake.poolId);
+      if (pool) {
+        const stakeAmount = Number(stake.amount) / 100_000_000;
+        const monthlyRate = pool.apy / 100 / 12;
+        totalMonthlyEarnings += stakeAmount * monthlyRate;
+      }
+    });
+    
+    return totalMonthlyEarnings;
+  };
+
   // Calculate portfolio metrics from live data
   const portfolioMetrics = {
     totalStaked: portfolio ? Number(portfolio.totalStaked) / 100_000_000 : 0,
     totalEarned: portfolio ? Number(portfolio.totalEarned) / 100_000_000 : 0,
-    currentAPY: 12.5, // This would come from pool data
-    activeStakes: userStakes.filter(stake => stake.isActive).length
+    currentAPY: calculateWeightedAPY(userStakes, pools),
+    activeStakes: userStakes.filter(stake => stake.isActive).length,
+    dailyEarnings: calculateDailyEarnings(userStakes, pools),
+    monthlyEarnings: calculateMonthlyEarnings(userStakes, pools)
   };
 
   // Load portfolio data from backend
@@ -38,6 +107,16 @@ const Dashboard = () => {
       setError(null);
       
       console.log('Loading dashboard data for principal:', principal);
+      
+      // Load pools data first (needed for APY calculations)
+      try {
+        const poolsData = await canisterService.getPools();
+        console.log('Loaded pools:', poolsData);
+        setPools(poolsData);
+      } catch (err) {
+        console.warn('Failed to load pools:', err);
+        setPools([]);
+      }
       
       // Load portfolio data
       const portfolioResult = await canisterService.getPortfolio(principal);
@@ -108,8 +187,8 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-surface-900 pt-20">
       <div className="container mx-auto px-6 py-8">
-        {/* Back Button */}
-        <div className="mb-6">
+        {/* Back Button and Refresh */}
+        <div className="mb-6 flex justify-between items-center">
           <button
             onClick={() => window.history.back()}
             className="inline-flex items-center px-4 py-2 text-xonora-secondary-400 hover:text-xonora-primary-400 transition-colors duration-300 font-body"
@@ -118,6 +197,17 @@ const Dashboard = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back
+          </button>
+          
+          <button
+            onClick={loadData}
+            disabled={loadingData}
+            className="inline-flex items-center px-4 py-2 bg-xonora-primary-400 text-xonora-dark rounded-lg hover:bg-xonora-primary-500 transition-colors duration-300 font-body disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg className={`w-4 h-4 mr-2 ${loadingData ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            {loadingData ? 'Refreshing...' : 'Refresh Data'}
           </button>
         </div>
 
@@ -340,11 +430,15 @@ const Dashboard = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xonora-secondary-400">Daily Earnings:</span>
-                  <span className="text-xonora-primary-400">~0.004 ckBTC</span>
+                  <span className="text-xonora-primary-400">
+                    {portfolioMetrics.dailyEarnings > 0 ? `~${portfolioMetrics.dailyEarnings.toFixed(6)} ckBTC` : 'N/A'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xonora-secondary-400">Monthly Earnings:</span>
-                  <span className="text-xonora-primary-400">~0.12 ckBTC</span>
+                  <span className="text-xonora-primary-400">
+                    {portfolioMetrics.monthlyEarnings > 0 ? `~${portfolioMetrics.monthlyEarnings.toFixed(6)} ckBTC` : 'N/A'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -373,8 +467,22 @@ const Dashboard = () => {
                     <tr>
                       <td colSpan={4} className="py-8 text-center text-xonora-secondary-400">
                         <div className="text-center">
-                          <p>No transactions found.</p>
-                          <p className="text-sm text-xonora-secondary-500 mt-1">Start staking to see your transaction history.</p>
+                          <div className="mb-4">
+                            <svg className="w-16 h-16 mx-auto text-xonora-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-semibold text-xonora-light mb-2">No Transactions Yet</h3>
+                          <p className="text-xonora-secondary-400 mb-4">Your transaction history will appear here once you start staking.</p>
+                          <a
+                            href="/staking"
+                            className="inline-flex items-center px-6 py-3 bg-xonora-primary-400 text-xonora-dark rounded-lg font-semibold hover:bg-xonora-primary-500 transition-colors duration-300"
+                          >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Start Staking
+                          </a>
                         </div>
                       </td>
                     </tr>
