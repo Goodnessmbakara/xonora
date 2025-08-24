@@ -49,7 +49,7 @@ const TestimonialsSection = () => {
 
               {/* Author */}
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 rounded-full flex items-center justify-center text-xonora-dark font-bold mr-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-xonora-amber-400 to-xonora-amber-600 rounded-full flex items-center justify-center text-xonora-dark font-bold mr-4">
                   {testimonial.avatar}
                 </div>
                 <div>

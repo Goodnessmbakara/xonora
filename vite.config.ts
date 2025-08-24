@@ -20,8 +20,9 @@ export default defineConfig(({ mode }) => ({
     },
   },
   define: {
-    'process.env.CANISTER_ID_XONORA_BACKEND': JSON.stringify('uxrrr-q7777-77774-qaaaq-cai'),
-    'process.env.DFX_NETWORK': JSON.stringify(mode === 'production' ? 'ic' : 'local'),
+    // Environment variables with VITE_ prefix are automatically available to client code
+    // VITE_CANISTER_ID_XONORA_BACKEND, VITE_NETWORK, and other VITE_* variables 
+    // should be set in the deployment environment
     global: 'globalThis',
   },
   optimizeDeps: {

@@ -23,7 +23,7 @@ const BrandButton: React.FC<BrandButtonProps> = ({
   target,
   rel
 }) => {
-  const baseClasses = 'inline-flex items-center font-semibold rounded-lg transition-all duration-300 font-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-xonora-primary-400/30';
+  const baseClasses = 'inline-flex items-center font-semibold rounded-lg transition-all duration-300 font-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-xonora-amber-400/30';
   
   const sizeClasses = {
     sm: 'px-4 py-2 text-sm',
@@ -32,8 +32,8 @@ const BrandButton: React.FC<BrandButtonProps> = ({
   };
   
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark hover:scale-105 hover:shadow-lg hover:shadow-xonora-primary-400/25',
-    outline: 'border-2 border-xonora-primary-400 text-xonora-primary-400 hover:bg-xonora-primary-400 hover:text-xonora-dark'
+    primary: 'bg-gradient-to-r from-xonora-amber-400 to-xonora-amber-600 text-xonora-dark hover:scale-105 hover:shadow-lg hover:shadow-xonora-amber-400/25',
+    outline: 'border-2 border-xonora-amber-400 text-xonora-amber-400 hover:bg-xonora-amber-400 hover:text-xonora-dark'
   };
   
   const classes = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;

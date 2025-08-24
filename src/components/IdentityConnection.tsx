@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
 import { Alert, AlertDescription } from './ui/alert';
-import { Loader2, Wallet, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Loader2, User, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
-interface WalletConnectionProps {
+interface IdentityConnectionProps {
   showFullInterface?: boolean;
   className?: string;
 }
 
-const WalletConnection: React.FC<WalletConnectionProps> = ({ 
+const IdentityConnection: React.FC<IdentityConnectionProps> = ({ 
   showFullInterface = false, 
   className = '' 
 }) => {
@@ -54,7 +54,7 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
       case 'error':
         return <XCircle className="w-4 h-4 text-red-400" />;
       default:
-        return <Wallet className="w-4 h-4 text-xonora-secondary-400" />;
+        return <User className="w-4 h-4 text-xonora-secondary-400" />;
     }
   };
 
@@ -80,7 +80,7 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
     return (
       <div className={`bg-xonora-secondary-700 rounded-xl p-6 ${className}`}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-white">Wallet Connection</h3>
+          <h3 className="text-xl font-semibold text-white">Internet Identity</h3>
           <div className="flex items-center space-x-2">
             {getStatusIcon()}
             <span className="text-sm text-xonora-secondary-300">{getStatusText()}</span>
@@ -108,7 +108,7 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-xonora-accent-400" />
-                <span className="text-xonora-accent-400 font-medium">Wallet Connected</span>
+                <span className="text-xonora-accent-400 font-medium">Identity Connected</span>
               </div>
               <Button
                 onClick={handleDisconnect}
@@ -122,17 +122,17 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
         ) : (
           <div className="space-y-4">
             <div className="text-xonora-secondary-300 text-center py-8">
-              <Wallet className="w-12 h-12 mx-auto mb-4 text-xonora-secondary-500" />
-              <p className="mb-2 font-body">Connect your Internet Identity wallet</p>
+              <User className="w-12 h-12 mx-auto mb-4 text-xonora-secondary-500" />
+              <p className="mb-2 font-body">Connect with Internet Identity</p>
               <p className="text-sm text-xonora-secondary-500 font-body">
-                Securely connect to access Xonora's Bitcoin yield farming platform
+                Securely authenticate to access Xonora's Bitcoin yield farming platform
               </p>
             </div>
             
             <Button
               onClick={handleConnect}
               disabled={isLoading || isConnecting}
-              className="w-full bg-gradient-to-r from-xonora-primary-400 to-xonora-accent-400 hover:from-xonora-primary-500 hover:to-xonora-accent-500 text-xonora-dark font-semibold"
+              className="w-full bg-gradient-to-r from-xonora-amber-400 to-xonora-amber-600 hover:from-xonora-amber-500 hover:to-xonora-amber-700 text-xonora-dark font-semibold"
             >
               {isLoading || isConnecting ? (
                 <>
@@ -141,8 +141,8 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
                 </>
               ) : (
                 <>
-                  <Wallet className="w-4 h-4 mr-2" />
-                  Connect Wallet
+                  <User className="w-4 h-4 mr-2" />
+                  Login with Internet Identity
                 </>
               )}
             </Button>
@@ -176,7 +176,7 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
         <Button
           onClick={handleConnect}
           disabled={isLoading || isConnecting}
-          className="bg-gradient-to-r from-xonora-primary-400 to-xonora-accent-400 hover:from-xonora-primary-500 hover:to-xonora-accent-500 text-xonora-dark font-semibold"
+          className="bg-gradient-to-r from-xonora-amber-400 to-xonora-amber-600 hover:from-xonora-amber-500 hover:to-xonora-amber-700 text-xonora-dark font-semibold"
         >
           {isLoading || isConnecting ? (
             <>
@@ -185,8 +185,8 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
             </>
           ) : (
             <>
-              <Wallet className="w-4 h-4 mr-2" />
-              Connect Wallet
+              <User className="w-4 h-4 mr-2" />
+              Login with Internet Identity
             </>
           )}
         </Button>
@@ -195,5 +195,5 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
   );
 };
 
-export default WalletConnection;
+export default IdentityConnection;
 

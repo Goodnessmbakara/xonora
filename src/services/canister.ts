@@ -3,7 +3,7 @@ import { AuthClient } from '@dfinity/auth-client';
 import { InternetIdentity } from '@dfinity/auth-client/lib/cjs/providers/internet-identity';
 import { idlFactory } from '../declarations/xonora_backend/xonora_backend.did.js';
 import type { _SERVICE as Xonora } from '../declarations/xonora_backend/xonora_backend.did.d.ts';
-import { getCanisterId, getICHost, getIdentityProvider } from '../config/canister';
+import { getCanisterId, getICHost, getIdentityProvider, getNetwork, isProduction, validateEnvironment } from '../config/canister';
 
 // Types
 export interface Pool {
@@ -46,6 +46,12 @@ class CanisterService {
 
   async initialize() {
     try {
+      // Validate environment variables first
+      validateEnvironment();
+      
+      const network = getNetwork();
+      console.log(`Initializing canister service for network: ${network}`);
+      
       // Initialize auth client
       this.authClient = await AuthClient.create({
         idleOptions: {
@@ -61,10 +67,13 @@ class CanisterService {
         await this.setupActorWithIdentity();
       }
 
-      console.log('Canister service initialized', { isAuthenticated });
+      console.log(`Canister service initialized for network: ${network}`, { isAuthenticated });
       return true;
     } catch (error) {
       console.error('Failed to initialize canister service:', error);
+      if (error instanceof Error && error.message.includes('VITE_CANISTER_ID_XONORA_BACKEND')) {
+        console.error('Environment variable error. Please check your deployment configuration.');
+      }
       return false;
     }
   }
@@ -87,21 +96,19 @@ class CanisterService {
       this.agent = new HttpAgent({
         identity,
         host,
-        // Only disable signature verification for local development
-        verifyQuerySignatures: import.meta.env.PROD === true,
+        // Enable signature verification for production, disable for local development
+        verifyQuerySignatures: isProduction(),
         // Only disable nonce for local development
-        ...(import.meta.env.DEV && { disableNonce: true }),
+        ...(!isProduction() && { disableNonce: true }),
       });
 
-      // Always fetch root key for local development to avoid certificate issues
-      if (import.meta.env.DEV === true) {
+      // Only fetch root key for local development to avoid certificate issues
+      if (!isProduction()) {
         console.log('Fetching root key for local development...');
         try {
           await this.agent.fetchRootKey();
           console.log('Root key fetched successfully');
           
-          // Additional step: Disable certificate verification at the agent level
-          (this.agent as any).rootKey = await this.agent.rootKey;
           console.log('Agent configured for local development');
         } catch (err) {
           console.error('Root key fetch failed:', {
@@ -215,11 +222,20 @@ class CanisterService {
         return false;
       }
       
-      console.log('Retrying actor setup...');
+      const network = getNetwork();
+      console.log(`Retrying actor setup for network: ${network}...`);
+      
+      // Validate environment before retry
+      validateEnvironment();
+      
       await this.setupActorWithIdentity();
+      console.log('Retry connection successful');
       return true;
     } catch (error) {
       console.error('Retry connection failed:', error);
+      if (error instanceof Error && error.message.includes('VITE_CANISTER_ID_XONORA_BACKEND')) {
+        console.error('Environment variable error during retry. Please check your deployment configuration.');
+      }
       return false;
     }
   }

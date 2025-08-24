@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import WalletConnection from '../components/WalletConnection';
+import IdentityConnection from '../components/IdentityConnection';
 import { canisterService } from '../services/canister';
 import type { Pool, Stake } from '../services/canister';
 
@@ -141,9 +141,9 @@ const Staking = () => {
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-xonora-light mb-4 font-tech">Staking Access</h1>
-            <p className="text-xonora-secondary-400 font-body">Connect your Internet Identity wallet to start staking your Bitcoin and earning yields through our AI-optimized pools.</p>
+                          <p className="text-xonora-secondary-400 font-body">Connect with Internet Identity to start staking your Bitcoin and earning yields through our AI-optimized pools.</p>
           </div>
-          <WalletConnection showFullInterface={true} />
+          <IdentityConnection showFullInterface={true} />
         </div>
       </div>
     );
@@ -152,21 +152,7 @@ const Staking = () => {
   return (
     <div className="min-h-screen bg-surface-900 pt-20">
       <div className="container mx-auto px-6 py-8">
-        {/* Production Warning Banner */}
-        {import.meta.env.PROD && (
-          <div className="mb-6 bg-xonora-warning/20 border border-xonora-warning rounded-lg p-4">
-            <div className="flex items-center">
-              <span className="text-xonora-warning text-xl mr-2">⚠️</span>
-              <div>
-                <div className="text-xonora-warning font-semibold">Demo Version</div>
-                <div className="text-xonora-warning/80 text-sm">
-                  The backend canister is not yet deployed to IC mainnet. 
-                  For full functionality, please use the local development version.
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+
 
         {/* Header */}
         <div className="mb-8">
@@ -221,53 +207,60 @@ const Staking = () => {
                 <label className="block text-sm font-medium text-xonora-secondary-300 mb-3 font-body">
                   Select Pool
                 </label>
-                <div className="grid gap-3">
-                  {pools.map((pool) => {
-                    const utilizationPercent = pool.maxCapacity > 0n 
-                      ? (Number(pool.totalStaked) / Number(pool.maxCapacity)) * 100 
-                      : 0;
-                    
-                    return (
-                      <label
-                        key={pool.id}
-                        className={`relative cursor-pointer p-4 rounded-lg border-2 transition-all duration-300 ${
-                          selectedPool === pool.id
-                            ? "border-xonora-primary-400 bg-xonora-primary-400/10"
-                            : "border-xonora-secondary-500 hover:border-xonora-primary-400/50"
-                        } ${!pool.isActive ? "opacity-50 cursor-not-allowed" : ""}`}
-                      >
-                        <input
-                          type="radio"
-                          name="pool"
-                          value={pool.id}
-                          checked={selectedPool === pool.id}
-                          onChange={(e) => setSelectedPool(e.target.value)}
-                          disabled={!pool.isActive}
-                          className="sr-only"
-                        />
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h4 className="font-semibold text-xonora-light">{pool.name}</h4>
-                            <div className="text-xs text-xonora-secondary-500 mt-1">
-                              Capacity: {utilizationPercent.toFixed(1)}% used
+                                <div className="grid gap-3">
+                  {pools.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-xonora-secondary-400">No pools available.</p>
+                      <p className="text-sm text-xonora-secondary-500 mt-2 font-body">Please try again later.</p>
+                    </div>
+                  ) : (
+                    pools.map((pool) => {
+                      const utilizationPercent = pool.maxCapacity > 0n 
+                        ? (Number(pool.totalStaked) / Number(pool.maxCapacity)) * 100 
+                        : 0;
+                      
+                      return (
+                        <label
+                          key={pool.id}
+                          className={`relative cursor-pointer p-4 rounded-lg border-2 transition-all duration-300 ${
+                            selectedPool === pool.id
+                              ? "border-xonora-primary-400 bg-xonora-primary-400/10"
+                              : "border-xonora-secondary-500 hover:border-xonora-primary-400/50"
+                          } ${!pool.isActive ? "opacity-50 cursor-not-allowed" : ""}`}
+                        >
+                          <input
+                            type="radio"
+                            name="pool"
+                            value={pool.id}
+                            checked={selectedPool === pool.id}
+                            onChange={(e) => setSelectedPool(e.target.value)}
+                            disabled={!pool.isActive}
+                            className="sr-only"
+                          />
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h4 className="font-semibold text-xonora-light">{pool.name}</h4>
+                              <div className="text-xs text-xonora-secondary-500 mt-1">
+                                Capacity: {utilizationPercent.toFixed(1)}% used
+                              </div>
+                              <div className="text-xs text-xonora-secondary-500">
+                                Total Staked: {(Number(pool.totalStaked) / 100_000_000).toFixed(8)} BTC
+                              </div>
+                              {!pool.isActive && (
+                                <span className="text-xs text-red-400">Inactive</span>
+                              )}
                             </div>
-                            <div className="text-xs text-xonora-secondary-500">
-                              Total Staked: {(Number(pool.totalStaked) / 100_000_000).toFixed(8)} BTC
+                            <div className="text-right">
+                              <div className="text-2xl font-bold text-xonora-primary-400 mb-2">
+                                {pool.apy}%
+                              </div>
+                              <div className="text-sm text-xonora-secondary-400">APY</div>
                             </div>
-                            {!pool.isActive && (
-                              <span className="text-xs text-red-400">Inactive</span>
-                            )}
                           </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-xonora-primary-400 mb-2">
-                              {pool.apy}%
-                            </div>
-                            <div className="text-sm text-xonora-secondary-400">APY</div>
-                          </div>
-                        </div>
-                      </label>
-                    );
-                  })}
+                        </label>
+                      );
+                    })
+                  )}
                 </div>
               </div>
 

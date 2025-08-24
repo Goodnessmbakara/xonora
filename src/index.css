@@ -148,6 +148,12 @@ All colors MUST be HSL.
     --xonora-accent-600: 142 59% 45%;
     --xonora-warning: 45 100% 53%;
     --surface-900: 0 0% 9%;
+    --xonora-amber-400: 120 40% 65%;
+    --xonora-amber-500: 120 40% 57%;
+    --xonora-amber-600: 120 40% 49%;
+    --xonora-cyan-400: 180 13% 49%;
+    --xonora-cyan-500: 180 13% 41%;
+    --xonora-cyan-600: 180 13% 34%;
   }
 
   .dark {

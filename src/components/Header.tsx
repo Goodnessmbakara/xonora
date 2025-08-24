@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import Logo from './Logo';
-import WalletConnection from './WalletConnection';
+import IdentityConnection from './IdentityConnection';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -72,7 +72,7 @@ const Header = () => {
                 Stake Now
               </a>
             )}
-            <WalletConnection />
+            <IdentityConnection />
           </div>
 
           {/* Mobile Menu Button */}
@@ -148,7 +148,7 @@ const Header = () => {
                     Stake Now
                   </a>
                 )}
-                <WalletConnection className="w-full" />
+                <IdentityConnection className="w-full" />
               </div>
             </nav>
           </div>

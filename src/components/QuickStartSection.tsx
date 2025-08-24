@@ -79,7 +79,7 @@ const QuickStartSection = () => {
               style={{ animationDelay: `${index * 0.2}s` }}
             >
               {/* Step Number */}
-              <div className="bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark font-tech font-bold text-lg w-12 h-12 rounded-full flex items-center justify-center mb-6 mx-auto">
+                              <div className="bg-gradient-to-r from-xonora-amber-400 to-xonora-amber-600 text-xonora-dark font-tech font-bold text-lg w-12 h-12 rounded-full flex items-center justify-center mb-6 mx-auto">
                 {step.number}
               </div>
 

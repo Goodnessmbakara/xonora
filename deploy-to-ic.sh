@@ -6,6 +6,18 @@ echo "🚀 Deploying Xonora Backend to IC Mainnet..."
 # Set environment variable to suppress identity warning
 export DFX_WARNING=-mainnet_plaintext_identity
 
+# Validate environment variables
+echo "🔍 Validating environment variables..."
+if [ -z "$VITE_CANISTER_ID_XONORA_BACKEND" ]; then
+    echo "⚠️  VITE_CANISTER_ID_XONORA_BACKEND is not set (this is expected for first deployment)"
+else
+    echo "✅ VITE_CANISTER_ID_XONORA_BACKEND is set: $VITE_CANISTER_ID_XONORA_BACKEND"
+fi
+
+if [ "$VITE_NETWORK" != "ic" ]; then
+    echo "⚠️  VITE_NETWORK should be set to 'ic' for production deployment"
+fi
+
 # Check cycles balance
 echo "💰 Checking cycles balance..."
 dfx cycles balance --network ic
@@ -38,10 +50,14 @@ if [ $? -eq 0 ]; then
         echo ""
         echo "🎉 DEPLOYMENT COMPLETE!"
         echo "📋 Next steps:"
-        echo "1. Add this to Vercel environment variables:"
+        echo "1. Set these environment variables in your deployment platform:"
         echo "   VITE_CANISTER_ID_XONORA_BACKEND=$CANISTER_ID"
-        echo "2. Redeploy your frontend on Vercel"
-        echo "3. Your live site will now work with the backend!"
+        echo "   VITE_NETWORK=ic"
+        echo "   VITE_IC_HOST=https://ic0.app"
+        echo "2. Verify canister accessibility:"
+        echo "   dfx canister call $CANISTER_ID whoami --network ic"
+        echo "3. Build and deploy your frontend with the new environment variables"
+        echo "4. Your live site will now work with the backend!"
     else
         echo "❌ Failed to initialize backend"
     fi

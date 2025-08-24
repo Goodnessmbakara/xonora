@@ -76,10 +76,10 @@ dfx start --clean --background
 dfx deploy
 ```
 
-- **Canister IDs:**
-  - Backend: `uxrrr-q7777-77774-qaaaq-cai`
-  - Frontend: `u6s2n-gx777-77774-qaaba-cai`
-  - Internet Identity: `ulvla-h7777-77774-qaacq-cai` (local)
+- **Canister IDs:** (These are automatically detected from your local DFX deployment)
+  - Backend: Check with `dfx canister id xonora_backend`
+  - Frontend: Check with `dfx canister id xonora_frontend`
+  - Internet Identity: Check with `dfx canister id internet_identity`
 
 ### 4. Initialize the Backend System
 ```bash
@@ -95,12 +95,25 @@ npm run dev -- --host 127.0.0.1
 
 ### 6. Internet Identity (Local Auth)
 - The app uses a local Internet Identity canister for authentication.
-- When prompted to log in, a popup will use:
-  - `http://127.0.0.1:8000?canisterId=ulvla-h7777-77774-qaacq-cai`
-- **Backend API**: `http://127.0.0.1:8000/?canisterId=uzt4z-lp777-77774-qaabq-cai&id=uxrrr-q7777-77774-qaaaq-cai`
+- When prompted to log in, a popup will use the local Internet Identity canister.
+- **Backend API**: Automatically configured based on your local deployment.
 - You can create a new identity or use an existing one.
 
-### 7. Troubleshooting
+### 7. Environment Configuration
+
+The application automatically detects your environment and configures itself accordingly:
+
+- **Local Development**: Automatically uses local canister IDs and network
+- **Production**: Requires environment variables (see [ENVIRONMENT.md](./ENVIRONMENT.md))
+
+For production deployment, you'll need to set:
+```bash
+VITE_CANISTER_ID_XONORA_BACKEND=your_deployed_canister_id
+VITE_NETWORK=ic
+VITE_IC_HOST=https://ic0.app
+```
+
+### 8. Troubleshooting
 - **Auth stuck on "Loading..."?**
   - Make sure you use `127.0.0.1` (not `localhost`) everywhere.
   - Make sure all canisters are deployed and running.
@@ -110,6 +123,9 @@ npm run dev -- --host 127.0.0.1
   - If you see "Canister not found", make sure you deployed II and are using the correct canister ID.
 - **Canister import errors?**
   - Run `dfx generate` to regenerate canister bindings if you change the backend interface.
+- **Environment variable errors?**
+  - Check that all required `VITE_*` variables are set for production
+  - Verify canister IDs are correct and accessible
 
 ---
 

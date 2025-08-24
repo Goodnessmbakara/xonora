@@ -1,27 +1,95 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import WalletConnection from '../components/WalletConnection';
+import IdentityConnection from '../components/IdentityConnection';
+import { canisterService } from '../services/canister';
+import type { Portfolio, Stake } from '../services/canister';
+
+interface Transaction {
+  id: number;
+  type: 'Stake' | 'Unstake' | 'Earn';
+  amount: number;
+  date: string;
+  status: 'Completed' | 'Pending' | 'Failed';
+}
 
 const Dashboard = () => {
-  const { isAuthenticated } = useAuth();
-  const [portfolio, setPortfolio] = useState({
-    totalStaked: 0.0,
-    totalEarned: 0.0,
-    currentAPY: 12.5,
-    activeStakes: 3
-  });
+  const { isAuthenticated, principal } = useAuth();
+  const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
+  const [userStakes, setUserStakes] = useState<Stake[]>([]);
+  const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [recentTransactions] = useState([
-    { id: 1, type: 'Stake', amount: 0.5, date: '2024-01-15', status: 'Completed' },
-    { id: 2, type: 'Earn', amount: 0.023, date: '2024-01-14', status: 'Completed' },
-    { id: 3, type: 'Stake', amount: 1.2, date: '2024-01-12', status: 'Completed' },
-    { id: 4, type: 'Earn', amount: 0.045, date: '2024-01-11', status: 'Completed' }
-  ]);
+  // Calculate portfolio metrics from live data
+  const portfolioMetrics = {
+    totalStaked: portfolio ? Number(portfolio.totalStaked) / 100_000_000 : 0,
+    totalEarned: portfolio ? Number(portfolio.totalEarned) / 100_000_000 : 0,
+    currentAPY: 12.5, // This would come from pool data
+    activeStakes: userStakes.filter(stake => stake.isActive).length
+  };
 
+  // Load portfolio data from backend
+  const loadData = async () => {
+    if (!isAuthenticated || !principal) return;
+
+    try {
+      setLoadingData(true);
+      setError(null);
+      
+      console.log('Loading dashboard data for principal:', principal);
+      
+      // Load portfolio data
+      const portfolioResult = await canisterService.getPortfolio(principal);
+      if ('ok' in portfolioResult) {
+        console.log('Loaded portfolio:', portfolioResult.ok);
+        setPortfolio(portfolioResult.ok);
+      } else {
+        console.warn('Failed to load portfolio:', portfolioResult.err);
+        setPortfolio(null);
+      }
+      
+      // Load user stakes
+      try {
+        const stakesData = await canisterService.getUserStakes(principal);
+        console.log('Loaded user stakes:', stakesData);
+        setUserStakes(stakesData);
+        
+        // Generate recent transactions from stakes
+        const transactions: Transaction[] = stakesData.map((stake, index) => ({
+          id: index + 1,
+          type: 'Stake' as const,
+          amount: Number(stake.amount) / 100_000_000,
+          date: new Date(Number(stake.startTime) / 1_000_000).toLocaleDateString(),
+          status: stake.isActive ? 'Completed' as const : 'Completed' as const
+        }));
+        setRecentTransactions(transactions);
+      } catch (err) {
+        console.warn('Failed to load user stakes:', err);
+        setUserStakes([]);
+        setRecentTransactions([]);
+      }
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load dashboard data';
+      
+      // Check if this is a production environment issue
+      if (import.meta.env.PROD && (errorMessage.includes('signature') || errorMessage.includes('certificate') || errorMessage.includes('Invalid canister'))) {
+        setError('🚧 Backend Not Yet Deployed: The Xonora backend canister is not yet deployed to IC mainnet. For testing, please use the local development version at localhost:8080');
+      } else {
+        setError(errorMessage);
+      }
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  // Load data on component mount and when authentication changes
   useEffect(() => {
-    // Fetch portfolio data from backend
-    // This would typically call your canister service
-  }, []);
+    if (isAuthenticated) {
+      loadData();
+    }
+  }, [isAuthenticated, principal]);
 
   if (!isAuthenticated) {
     return (
@@ -29,9 +97,9 @@ const Dashboard = () => {
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-xonora-light mb-4 font-tech">Dashboard Access</h1>
-            <p className="text-xonora-secondary-400 font-body">Connect your Internet Identity wallet to view your dashboard and manage your Bitcoin yield farming positions.</p>
+                          <p className="text-xonora-secondary-400 font-body">Connect with Internet Identity to view your dashboard and manage your Bitcoin yield farming positions.</p>
           </div>
-          <WalletConnection showFullInterface={true} />
+          <IdentityConnection showFullInterface={true} />
         </div>
       </div>
     );
@@ -111,6 +179,37 @@ const Dashboard = () => {
           </p>
         </div>
 
+        {/* Loading State */}
+        {loadingData && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-xonora-secondary-700 rounded-lg p-8 text-center">
+              <div className="text-xonora-primary-400 mb-4">Loading your portfolio...</div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-xonora-primary-400 mx-auto"></div>
+            </div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 rounded-lg p-4 mb-6">
+            <div className="text-red-400 mb-2">Error: {error}</div>
+            <div className="space-x-2">
+              <button 
+                onClick={loadData}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Retry
+              </button>
+              <button 
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-xonora-secondary-600 text-white rounded hover:bg-xonora-secondary-700"
+              >
+                Refresh Page
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Portfolio Overview with Enhanced Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-xonora-secondary-700 rounded-xl p-6 relative overflow-hidden group hover:scale-105 transition-all duration-300">
@@ -123,7 +222,7 @@ const Dashboard = () => {
               </div>
               <h3 className="text-xonora-secondary-400 text-sm font-medium mb-2">Total Staked</h3>
               <div className="text-xonora-primary-400 text-xl font-bold">
-                {portfolio.totalStaked.toFixed(3)} ckBTC
+                {portfolioMetrics.totalStaked.toFixed(3)} ckBTC
               </div>
             </div>
           </div>
@@ -138,7 +237,7 @@ const Dashboard = () => {
               </div>
               <h3 className="text-xonora-secondary-400 text-sm font-medium mb-2">Total Earned</h3>
               <div className="text-xonora-primary-400 text-xl font-bold">
-                {portfolio.totalEarned.toFixed(3)} ckBTC
+                {portfolioMetrics.totalEarned.toFixed(3)} ckBTC
               </div>
             </div>
           </div>
@@ -153,7 +252,7 @@ const Dashboard = () => {
               </div>
               <h3 className="text-xonora-secondary-400 text-sm font-medium mb-2">Current APY</h3>
               <div className="text-xonora-primary-400 text-xl font-bold">
-                {portfolio.currentAPY}%
+                {portfolioMetrics.currentAPY}%
               </div>
             </div>
           </div>
@@ -168,7 +267,7 @@ const Dashboard = () => {
               </div>
               <h3 className="text-xonora-secondary-400 text-sm font-medium mb-2">Active Stakes</h3>
               <div className="text-xonora-primary-400 text-xl font-bold">
-                {portfolio.activeStakes}
+                {portfolioMetrics.activeStakes}
               </div>
             </div>
           </div>
@@ -182,12 +281,12 @@ const Dashboard = () => {
               <h2 className="text-2xl font-tech font-bold mb-6 text-xonora-primary-400">
                 Yield Performance
               </h2>
-              <span className="text-xonora-secondary-400">{portfolio.currentAPY}% APY</span>
+              <span className="text-xonora-secondary-400">{portfolioMetrics.currentAPY}% APY</span>
             </div>
             <div className="w-full bg-xonora-secondary-600 rounded-full h-3 mb-2 relative overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 h-3 rounded-full transition-all duration-1000 relative overflow-hidden"
-                style={{ width: `${Math.min((portfolio.currentAPY / 15) * 100, 100)}%` }}
+                className="bg-gradient-to-r from-xonora-amber-400 to-xonora-amber-600 h-3 rounded-full transition-all duration-1000 relative overflow-hidden"
+                style={{ width: `${Math.min((portfolioMetrics.currentAPY / 15) * 100, 100)}%` }}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
               </div>
@@ -237,7 +336,7 @@ const Dashboard = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-xonora-secondary-400">Total Value:</span>
-                  <span className="text-xonora-light">{(portfolio.totalStaked + portfolio.totalEarned).toFixed(3)} ckBTC</span>
+                  <span className="text-xonora-light">{(portfolioMetrics.totalStaked + portfolioMetrics.totalEarned).toFixed(3)} ckBTC</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xonora-secondary-400">Daily Earnings:</span>
@@ -270,7 +369,17 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentTransactions.map((tx) => (
+                  {recentTransactions.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-xonora-secondary-400">
+                        <div className="text-center">
+                          <p>No transactions found.</p>
+                          <p className="text-sm text-xonora-secondary-500 mt-1">Start staking to see your transaction history.</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    recentTransactions.map((tx) => (
                     <tr key={tx.id} className="border-b border-xonora-secondary-600 hover:bg-xonora-secondary-600/50 transition-colors duration-200">
                       <td className="py-3 px-4 text-xonora-light">
                         <div className="flex items-center">
@@ -286,7 +395,8 @@ const Dashboard = () => {
                         </span>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                  )}
                 </tbody>
               </table>
             </div>

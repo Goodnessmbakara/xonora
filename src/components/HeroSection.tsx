@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import WalletConnection from './WalletConnection';
+import IdentityConnection from './IdentityConnection';
 
 const HeroSection = () => {
   const { isAuthenticated } = useAuth();
@@ -28,16 +28,16 @@ const HeroSection = () => {
             {isAuthenticated ? (
               <a
                 href="/staking"
-                className="px-8 py-4 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark rounded-lg font-semibold hover:scale-105 transition-all duration-300 font-body"
+                className="px-8 py-4 bg-gradient-to-r from-xonora-amber-400 to-xonora-amber-600 text-xonora-dark rounded-lg font-semibold hover:scale-105 transition-all duration-300 font-body"
               >
                 Start Earning Now
               </a>
             ) : (
-              <WalletConnection />
+              <IdentityConnection />
             )}
             <a
               href="#features"
-              className="px-8 py-4 border-2 border-xonora-secondary-600 text-xonora-light rounded-lg font-semibold hover:border-xonora-primary-400 hover:text-xonora-primary-400 transition-all duration-300 font-body"
+              className="px-8 py-4 border-2 border-xonora-secondary-600 text-xonora-light rounded-lg font-semibold hover:border-xonora-amber-400 hover:text-xonora-amber-400 transition-all duration-300 font-body"
             >
               Learn More
             </a>

@@ -94,7 +94,19 @@ export default {
 				'xonora-warning': 'hsl(var(--xonora-warning) / <alpha-value>)',
 				'surface-900': 'hsl(var(--surface-900) / <alpha-value>)',
 				'success': 'hsl(var(--xonora-accent-400) / <alpha-value>)',
-				'danger': 'hsl(var(--xonora-warning) / <alpha-value>)'
+				'danger': 'hsl(var(--xonora-warning) / <alpha-value>)',
+				'xonora-amber': {
+					DEFAULT: 'hsl(var(--xonora-amber-500) / <alpha-value>)',
+					400: 'hsl(var(--xonora-amber-400) / <alpha-value>)',
+					500: 'hsl(var(--xonora-amber-500) / <alpha-value>)',
+					600: 'hsl(var(--xonora-amber-600) / <alpha-value>)'
+				},
+				'xonora-cyan': {
+					DEFAULT: 'hsl(var(--xonora-cyan-500) / <alpha-value>)',
+					400: 'hsl(var(--xonora-cyan-400) / <alpha-value>)',
+					500: 'hsl(var(--xonora-cyan-500) / <alpha-value>)',
+					600: 'hsl(var(--xonora-cyan-600) / <alpha-value>)'
+				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
