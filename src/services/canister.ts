@@ -2,7 +2,7 @@ import { Actor, HttpAgent } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
 import { idlFactory } from '../declarations/xonora_backend/xonora_backend.did.js';
 import type { _SERVICE as Xonora } from '../declarations/xonora_backend/xonora_backend.did.d.ts';
-import { getCanisterId, getICHost, getIdentityProvider, getNetwork, isProduction, validateEnvironment } from '../config/canister';
+import { getCanisterId, getICHost, getIdentityProvider, getNetwork, getNetworkSync, isProduction, validateEnvironment } from '../config/canister';
 import { 
   poolsCache, 
   portfolioCache, 
@@ -75,7 +75,7 @@ class CanisterService {
       // Validate environment variables first
       validateEnvironment();
       
-      const network = getNetwork();
+      const network = await getNetwork();
       console.log(`Initializing canister service for network: ${network}`);
       
       // Initialize auth client
@@ -217,17 +217,17 @@ class CanisterService {
     return null;
   }
 
-  isAuthenticated(): boolean {
-    return this.authClient?.isAuthenticated() || false;
+  async isAuthenticated(): Promise<boolean> {
+    return await this.authClient?.isAuthenticated() || false;
   }
 
-  getConnectionStatus(): 'disconnected' | 'connecting' | 'connected' | 'error' {
+  async getConnectionStatus(): Promise<'disconnected' | 'connecting' | 'connected' | 'error'> {
     if (!this.authClient) {
       console.log('Connection status: no auth client');
       return 'disconnected';
     }
     
-    const isAuth = this.isAuthenticated();
+    const isAuth = await this.isAuthenticated();
     const hasActor = !!this.actor;
     
     console.log('Connection status check:', { isAuth, hasActor });
@@ -248,7 +248,7 @@ class CanisterService {
         return false;
       }
       
-      const network = getNetwork();
+      const network = await getNetwork();
       console.log(`Retrying actor setup for network: ${network}...`);
       
       // Validate environment before retry
