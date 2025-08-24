@@ -34,8 +34,8 @@ const HowItWorksSection = () => {
     <section id="how-it-works" className="py-20 bg-surface-900">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 font-tech">
-            How <span className="bg-gradient-to-r from-xonora-primary-400 to-xonora-accent-400 bg-clip-text text-transparent">Xonora</span> Works
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            How <span className="text-gradient">Xonora</span> Works
           </h2>
           <p className="text-xl text-xonora-secondary-400 max-w-3xl mx-auto font-body">
             Our streamlined process makes Bitcoin yield farming accessible to everyone. Get started in minutes and start earning passive income.

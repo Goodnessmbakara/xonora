@@ -9,7 +9,7 @@ const QuickStartSection = () => {
       title: "Connect Your Wallet",
       description: "Securely connect your Internet Identity wallet to access the Xonora platform and start your journey.",
       icon: (
-        <svg viewBox="0 0 100 100" className="w-16 h-16">
+        <svg viewBox="0 0 100 100" className="w-16 h-16" aria-hidden="true" role="presentation">
           <circle cx="50" cy="50" r="45" fill="currentColor" opacity="0.1" />
           <path
             d="M30 50 L45 35 L70 35 L70 65 L45 65 Z"
@@ -27,7 +27,7 @@ const QuickStartSection = () => {
       title: "Choose Your Pool",
       description: "Select from our AI-optimized yield farming pools with different risk profiles and APY rates.",
       icon: (
-        <svg viewBox="0 0 100 100" className="w-16 h-16">
+        <svg viewBox="0 0 100 100" className="w-16 h-16" aria-hidden="true" role="presentation">
           <circle cx="50" cy="50" r="45" fill="currentColor" opacity="0.1" />
           <circle cx="35" cy="40" r="8" fill="currentColor" opacity="0.6" />
           <circle cx="65" cy="40" r="8" fill="currentColor" opacity="0.6" />
@@ -45,7 +45,7 @@ const QuickStartSection = () => {
       title: "Start Earning",
       description: "Deposit your ckBTC and watch your yields grow with our AI-powered optimization strategies.",
       icon: (
-        <svg viewBox="0 0 100 100" className="w-16 h-16">
+        <svg viewBox="0 0 100 100" className="w-16 h-16" aria-hidden="true" role="presentation">
           <circle cx="50" cy="50" r="45" fill="currentColor" opacity="0.1" />
           <circle cx="50" cy="50" r="25" fill="currentColor" opacity="0.2" />
           <text x="50" y="58" textAnchor="middle" className="font-bold text-2xl" fill="currentColor" opacity="0.8">₿</text>
@@ -63,7 +63,7 @@ const QuickStartSection = () => {
     <section id="quick-start" className="py-20 bg-surface-900">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-tech">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Get Started in 3 Simple Steps
           </h2>
           <p className="text-xl text-xonora-secondary-400 text-center mb-12 font-body">

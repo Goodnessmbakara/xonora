@@ -40,7 +40,7 @@ const FAQSection = () => {
     <section id="faq" className="py-20 bg-xonora-secondary-700">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-tech">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Frequently Asked Questions
           </h2>
           <p className="text-xl text-xonora-secondary-400 text-center mb-12 font-body">
@@ -57,7 +57,7 @@ const FAQSection = () => {
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-xonora-secondary-600 transition-colors duration-300"
+                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-xonora-secondary-600 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-xonora-primary-400/30"
               >
                 <h3 className="text-lg font-semibold text-white pr-4 font-body">
                   {faq.question}

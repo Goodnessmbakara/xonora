@@ -34,7 +34,7 @@ export const idlFactory = ({ IDL }) => {
   const Result_2 = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
   const Result_1 = IDL.Variant({ 'ok' : StakeId, 'err' : IDL.Text });
   const Result = IDL.Variant({ 'ok' : Amount, 'err' : IDL.Text });
-  const YieldBTC = IDL.Service({
+  const Xonora = IDL.Service({
     'getPool' : IDL.Func([PoolId], [Result_5], ['query']),
     'getPools' : IDL.Func([], [IDL.Vec(Pool)], ['query']),
     'getPortfolio' : IDL.Func([UserId], [Result_4], ['query']),
@@ -56,6 +56,6 @@ export const idlFactory = ({ IDL }) => {
     'unstake' : IDL.Func([StakeId], [Result], []),
     'whoami' : IDL.Func([], [IDL.Principal], []),
   });
-  return YieldBTC;
+  return Xonora;
 };
 export const init = ({ IDL }) => { return []; };

@@ -27,7 +27,7 @@ const ContactSection = () => {
     <section id="contact" className="py-20 bg-xonora-secondary-700">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-tech">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Get in Touch
           </h2>
           <p className="text-xl text-xonora-secondary-400 text-center mb-12 font-body">
@@ -38,7 +38,7 @@ const ContactSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Contact Form */}
           <div className="bg-surface-900 rounded-xl p-8">
-            <h3 className="text-2xl font-bold mb-6 text-white font-tech">
+            <h3 className="text-2xl font-bold mb-6 text-white">
               Send us a Message
             </h3>
             
@@ -102,7 +102,7 @@ const ContactSection = () => {
 
           {/* Contact Information */}
           <div className="bg-surface-900 rounded-xl p-8">
-            <h3 className="text-2xl font-bold text-xonora-primary-400 mb-6 font-tech">
+            <h3 className="text-2xl font-bold text-xonora-primary-400 mb-6">
               Contact Information
             </h3>
             

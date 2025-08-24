@@ -137,11 +137,11 @@ const Staking = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-surface-900 flex items-center justify-center p-6">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-4">Staking Access</h1>
-            <p className="text-gray-400">Connect your Internet Identity wallet to start staking your Bitcoin and earning yields through our AI-optimized pools.</p>
+            <h1 className="text-3xl font-bold text-xonora-light mb-4 font-tech">Staking Access</h1>
+            <p className="text-xonora-secondary-400 font-body">Connect your Internet Identity wallet to start staking your Bitcoin and earning yields through our AI-optimized pools.</p>
           </div>
           <WalletConnection showFullInterface={true} />
         </div>
@@ -150,16 +150,16 @@ const Staking = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 pt-20">
+    <div className="min-h-screen bg-surface-900 pt-20">
       <div className="container mx-auto px-6 py-8">
         {/* Production Warning Banner */}
         {import.meta.env.PROD && (
-          <div className="mb-6 bg-yellow-600/20 border border-yellow-500 rounded-lg p-4">
+          <div className="mb-6 bg-xonora-warning/20 border border-xonora-warning rounded-lg p-4">
             <div className="flex items-center">
-              <span className="text-yellow-400 text-xl mr-2">⚠️</span>
+              <span className="text-xonora-warning text-xl mr-2">⚠️</span>
               <div>
-                <div className="text-yellow-400 font-semibold">Demo Version</div>
-                <div className="text-yellow-200 text-sm">
+                <div className="text-xonora-warning font-semibold">Demo Version</div>
+                <div className="text-xonora-warning/80 text-sm">
                   The backend canister is not yet deployed to IC mainnet. 
                   For full functionality, please use the local development version.
                 </div>
@@ -170,17 +170,17 @@ const Staking = () => {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4 text-white">
+          <h1 className="text-3xl font-bold mb-4 text-xonora-light font-tech">
             Stake Your ckBTC
           </h1>
-          <p className="text-xl text-gray-400">
+          <p className="text-xl text-xonora-secondary-400 font-body">
             Choose your strategy and start earning Bitcoin yields with our AI-optimized pools.
           </p>
         </div>
 
         {(isLoading || loadingData) && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 rounded-lg p-8 text-center">
+            <div className="bg-xonora-secondary-700 rounded-lg p-8 text-center">
               <div className="text-xonora-primary-400">
                 {loadingData ? 'Loading pools and stakes...' : 'Processing...'}
               </div>
@@ -200,7 +200,7 @@ const Staking = () => {
               </button>
               <button 
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                className="px-4 py-2 bg-xonora-secondary-600 text-white rounded hover:bg-xonora-secondary-700"
               >
                 Refresh Page
               </button>
@@ -210,7 +210,7 @@ const Staking = () => {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Staking Form */}
-          <div className="bg-gray-800 rounded-xl p-8">
+          <div className="bg-xonora-secondary-700 rounded-xl p-8">
             <h3 className="text-2xl font-tech font-bold mb-4 text-xonora-primary-400">
               New Stake
             </h3>
@@ -218,7 +218,7 @@ const Staking = () => {
             <form onSubmit={handleStake} className="space-y-6">
               {/* Pool Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-3">
+                <label className="block text-sm font-medium text-xonora-secondary-300 mb-3 font-body">
                   Select Pool
                 </label>
                 <div className="grid gap-3">
@@ -233,7 +233,7 @@ const Staking = () => {
                         className={`relative cursor-pointer p-4 rounded-lg border-2 transition-all duration-300 ${
                           selectedPool === pool.id
                             ? "border-xonora-primary-400 bg-xonora-primary-400/10"
-                            : "border-yield-gray-600 hover:border-xonora-primary-400/50"
+                            : "border-xonora-secondary-500 hover:border-xonora-primary-400/50"
                         } ${!pool.isActive ? "opacity-50 cursor-not-allowed" : ""}`}
                       >
                         <input
@@ -247,11 +247,11 @@ const Staking = () => {
                         />
                         <div className="flex justify-between items-center">
                           <div>
-                            <h4 className="font-semibold text-white">{pool.name}</h4>
-                            <div className="text-xs text-gray-500 mt-1">
+                            <h4 className="font-semibold text-xonora-light">{pool.name}</h4>
+                            <div className="text-xs text-xonora-secondary-500 mt-1">
                               Capacity: {utilizationPercent.toFixed(1)}% used
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-xonora-secondary-500">
                               Total Staked: {(Number(pool.totalStaked) / 100_000_000).toFixed(8)} BTC
                             </div>
                             {!pool.isActive && (
@@ -262,7 +262,7 @@ const Staking = () => {
                             <div className="text-2xl font-bold text-xonora-primary-400 mb-2">
                               {pool.apy}%
                             </div>
-                            <div className="text-sm text-gray-400">APY</div>
+                            <div className="text-sm text-xonora-secondary-400">APY</div>
                           </div>
                         </div>
                       </label>
@@ -273,7 +273,7 @@ const Staking = () => {
 
               {/* Amount Input */}
               <div>
-                <label htmlFor="amount" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="amount" className="block text-sm font-medium text-xonora-secondary-300 mb-2 font-body">
                   Amount (ckBTC)
                 </label>
                 <input
@@ -284,33 +284,33 @@ const Staking = () => {
                   step="0.001"
                   min="0.001"
                   required
-                  className="w-full px-4 py-3 bg-gray-700 border border-yield-gray-600 rounded-lg text-xonora-light focus:border-xonora-primary-400 focus:outline-none"
+                  className="w-full px-4 py-3 bg-xonora-secondary-600 border border-xonora-secondary-500 rounded-lg text-xonora-light focus:border-xonora-primary-400 focus:outline-none"
                   placeholder="0.000"
                 />
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-xonora-secondary-400 mt-1 font-body">
                   Minimum stake: 0.001 ckBTC
                 </p>
               </div>
 
               {/* Estimated Returns */}
               {stakeAmount && parseFloat(stakeAmount) > 0 && (
-                <div className="bg-gray-700 rounded-lg p-4">
-                  <h4 className="font-semibold text-white mb-2">Estimated Returns</h4>
+                <div className="bg-xonora-secondary-600 rounded-lg p-4">
+                  <h4 className="font-semibold text-xonora-light mb-2">Estimated Returns</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Daily:</span>
+                      <span className="text-xonora-secondary-400">Daily:</span>
                       <span className="text-xonora-primary-400">
                         {((parseFloat(stakeAmount) * (pools.find(p => p.id === selectedPool)?.apy || 10) / 100) / 365).toFixed(6)} ckBTC
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Monthly:</span>
+                      <span className="text-xonora-secondary-400">Monthly:</span>
                       <span className="text-xonora-primary-400">
                         {((parseFloat(stakeAmount) * (pools.find(p => p.id === selectedPool)?.apy || 10) / 100) / 12).toFixed(6)} ckBTC
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Yearly:</span>
+                      <span className="text-xonora-secondary-400">Yearly:</span>
                       <span className="text-xonora-primary-400">
                         {(parseFloat(stakeAmount) * (pools.find(p => p.id === selectedPool)?.apy || 10) / 100).toFixed(6)} ckBTC
                       </span>
@@ -330,16 +330,16 @@ const Staking = () => {
           </div>
 
           {/* Active Stakes */}
-          <div className="bg-gray-800 rounded-xl p-8">
+          <div className="bg-xonora-secondary-700 rounded-xl p-8">
             <h3 className="text-2xl font-tech font-bold mb-2 text-xonora-primary-400">
               Active Stakes
             </h3>
-            <p className="text-gray-400 mb-6">Manage your existing staking positions</p>
+            <p className="text-xonora-secondary-400 mb-6 font-body">Manage your existing staking positions</p>
 
             {userStakes.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-400">No active stakes found.</p>
-                <p className="text-sm text-gray-500 mt-2">Start staking to see your positions here.</p>
+                <p className="text-xonora-secondary-400">No active stakes found.</p>
+                <p className="text-sm text-xonora-secondary-500 mt-2 font-body">Start staking to see your positions here.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -349,18 +349,18 @@ const Staking = () => {
                   const startDate = new Date(Number(stake.startTime) / 1_000_000).toLocaleDateString();
                   
                   return (
-                    <div key={Number(stake.id)} className="bg-gray-700 rounded-lg p-4">
+                    <div key={Number(stake.id)} className="bg-xonora-secondary-600 rounded-lg p-4">
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h4 className="font-semibold text-white capitalize">{pool?.name || stake.poolId}</h4>
-                          <p className="text-sm text-gray-400">Started: {startDate}</p>
-                          <p className="text-sm text-gray-400">Stake ID: {Number(stake.id)}</p>
+                                                      <h4 className="font-semibold text-xonora-light capitalize">{pool?.name || stake.poolId}</h4>
+                          <p className="text-sm text-xonora-secondary-400">Started: {startDate}</p>
+                          <p className="text-sm text-xonora-secondary-400">Stake ID: {Number(stake.id)}</p>
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-bold text-xonora-primary-400">
                             {pool?.apy || 0}% APY
                           </div>
-                          <div className={`text-sm ${stake.isActive ? 'text-green-400' : 'text-red-400'}`}>
+                          <div className={`text-sm ${stake.isActive ? 'text-success' : 'text-danger'}`}>
                             {stake.isActive ? 'Active' : 'Inactive'}
                           </div>
                         </div>
@@ -368,12 +368,12 @@ const Staking = () => {
                       
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                          <p className="text-sm text-gray-400">Staked Amount</p>
-                          <p className="font-semibold text-white">{stakeAmountBTC.toFixed(8)} BTC</p>
+                          <p className="text-sm text-xonora-secondary-400">Staked Amount</p>
+                          <p className="font-semibold text-xonora-light">{stakeAmountBTC.toFixed(8)} BTC</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-400">Status</p>
-                          <p className={`font-semibold ${stake.isActive ? 'text-green-400' : 'text-gray-400'}`}>
+                          <p className="text-sm text-xonora-secondary-400">Status</p>
+                          <p className={`font-semibold ${stake.isActive ? 'text-success' : 'text-xonora-secondary-400'}`}>
                             {stake.isActive ? 'Earning' : 'Completed'}
                           </p>
                         </div>

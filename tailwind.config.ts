@@ -93,25 +93,8 @@ export default {
 				'xonora-light': 'hsl(var(--xonora-light) / <alpha-value>)',
 				'xonora-warning': 'hsl(var(--xonora-warning) / <alpha-value>)',
 				'surface-900': 'hsl(var(--surface-900) / <alpha-value>)',
-				// Temporary aliases for backward compatibility
-				'yield-dark': 'hsl(var(--xonora-dark) / <alpha-value>)',
-				'yield-green': {
-					DEFAULT: 'hsl(var(--xonora-primary-500) / <alpha-value>)',
-					300: 'hsl(var(--xonora-primary-300) / <alpha-value>)',
-					400: 'hsl(var(--xonora-primary-400) / <alpha-value>)',
-					500: 'hsl(var(--xonora-primary-500) / <alpha-value>)',
-					600: 'hsl(var(--xonora-primary-600) / <alpha-value>)',
-					700: 'hsl(var(--xonora-primary-700) / <alpha-value>)'
-				},
-				'yield-gray': {
-					DEFAULT: 'hsl(var(--xonora-secondary-500) / <alpha-value>)',
-					300: 'hsl(var(--xonora-secondary-300) / <alpha-value>)',
-					400: 'hsl(var(--xonora-secondary-400) / <alpha-value>)',
-					500: 'hsl(var(--xonora-secondary-500) / <alpha-value>)',
-					600: 'hsl(var(--xonora-secondary-600) / <alpha-value>)',
-					700: 'hsl(var(--xonora-secondary-700) / <alpha-value>)'
-				},
-				'yield-light': 'hsl(var(--xonora-light) / <alpha-value>)'
+				'success': 'hsl(var(--xonora-accent-400) / <alpha-value>)',
+				'danger': 'hsl(var(--xonora-warning) / <alpha-value>)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

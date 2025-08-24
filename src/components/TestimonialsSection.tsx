@@ -22,7 +22,7 @@ const TestimonialsSection = () => {
     <section className="py-20 bg-surface-900">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-tech">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
             What Our Users Say
           </h2>
           <p className="text-xl text-xonora-secondary-400 text-center mb-12 font-body">

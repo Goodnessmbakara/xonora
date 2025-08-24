@@ -1,41 +1,41 @@
 // Version: 1.0.0
-type APY__36323999 = Float;
-type Amount__789575460 = Nat64;
-type PoolId__370745042 = Text;
-type Pool__88143927 =
+type APY__626307846 = Float;
+type Amount__167914910 = Nat64;
+type PoolId__601789651 = Text;
+type Pool__507997144 =
   {
-    apy : APY__36323999;
-    id : PoolId__370745042;
+    apy : APY__626307846;
+    id : PoolId__601789651;
     isActive : Bool;
-    maxCapacity : Amount__789575460;
+    maxCapacity : Amount__167914910;
     name : Text;
-    totalStaked : Amount__789575460
+    totalStaked : Amount__167914910
   };
-type Portfolio__1031131124 =
+type Portfolio__648408731 =
   {
-    activeStakes : [StakeId__183629912];
-    totalEarned : Amount__789575460;
-    totalStaked : Amount__789575460;
-    userId : UserId__9519127
+    activeStakes : [StakeId__376656078];
+    totalEarned : Amount__167914910;
+    totalStaked : Amount__167914910;
+    userId : UserId__290305454
   };
-type StakeId__183629912 = Nat;
-type Stake__489018412 =
+type StakeId__376656078 = Nat;
+type Stake__433984996 =
   {
-    amount : Amount__789575460;
-    id : StakeId__183629912;
+    amount : Amount__167914910;
+    id : StakeId__376656078;
     isActive : Bool;
-    lastClaimTime : Timestamp__932265376;
-    poolId : PoolId__370745042;
-    startTime : Timestamp__932265376;
-    userId : UserId__9519127
+    lastClaimTime : Timestamp__801448660;
+    poolId : PoolId__601789651;
+    startTime : Timestamp__801448660;
+    userId : UserId__290305454
   };
-type Timestamp__932265376 = Int;
-type UserId__9519127 = Principal;
+type Timestamp__801448660 = Int;
+type UserId__290305454 = Principal;
 actor {
   stable var isInitialized : Bool;
   stable var owner : Principal;
-  stable var poolsEntries : [(PoolId__370745042, Pool__88143927)];
-  stable var portfoliosEntries : [(UserId__9519127, Portfolio__1031131124)];
+  stable var poolsEntries : [(PoolId__601789651, Pool__507997144)];
+  stable var portfoliosEntries : [(UserId__290305454, Portfolio__648408731)];
   stable var stakeCounter : Nat;
-  stable var stakesEntries : [(StakeId__183629912, Stake__489018412)]
+  stable var stakesEntries : [(StakeId__376656078, Stake__433984996)]
 };

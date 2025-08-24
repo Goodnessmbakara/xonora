@@ -43,7 +43,7 @@ export interface Stake {
 export type StakeId = bigint;
 export type Timestamp = bigint;
 export type UserId = Principal;
-export interface YieldBTC {
+export interface Xonora {
   'getPool' : ActorMethod<[PoolId], Result_5>,
   'getPools' : ActorMethod<[], Array<Pool>>,
   'getPortfolio' : ActorMethod<[UserId], Result_4>,
@@ -58,6 +58,6 @@ export interface YieldBTC {
   'unstake' : ActorMethod<[StakeId], Result>,
   'whoami' : ActorMethod<[], Principal>,
 }
-export interface _SERVICE extends YieldBTC {}
+export interface _SERVICE extends Xonora {}
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

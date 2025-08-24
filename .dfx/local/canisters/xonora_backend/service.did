@@ -33,7 +33,7 @@ type Stake = record {
 type StakeId = nat;
 type Timestamp = int;
 type UserId = principal;
-type YieldBTC = service {
+type Xonora = service {
   getPool : (PoolId) -> (Result_5) query;
   getPools : () -> (vec Pool) query;
   getPortfolio : (UserId) -> (Result_4) query;
@@ -47,4 +47,4 @@ type YieldBTC = service {
   unstake : (StakeId) -> (Result);
   whoami : () -> (principal);
 };
-service : YieldBTC
+service : Xonora
