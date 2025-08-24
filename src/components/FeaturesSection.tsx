@@ -60,13 +60,13 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section id="features" className="py-20 bg-gray-800">
+    <section id="features" className="py-20 bg-xonora-secondary-700">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Why Choose <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Xonora</span>?
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 font-tech">
+            Why Choose <span className="bg-gradient-to-r from-xonora-primary-400 to-xonora-accent-400 bg-clip-text text-transparent">Xonora</span>?
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-xl text-xonora-secondary-400 max-w-3xl mx-auto font-body">
             Experience the future of Bitcoin yield farming with our cutting-edge platform designed for maximum returns and ease of use.
           </p>
         </div>
@@ -75,7 +75,7 @@ const FeaturesSection = () => {
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className="bg-gray-900 rounded-xl p-8 hover:scale-105 transition-all duration-300 animate-fade-in group"
+              className="bg-surface-900 rounded-xl p-8 hover:scale-105 transition-all duration-300 animate-fade-in group"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="text-xonora-primary-400 mb-6 group-hover:scale-110 transition-transform duration-300">
@@ -84,7 +84,7 @@ const FeaturesSection = () => {
               <h3 className="text-2xl font-tech font-bold mb-4 text-center text-xonora-primary-400">
                 {feature.title}
               </h3>
-              <p className="text-gray-400 text-center leading-relaxed">
+              <p className="text-xonora-secondary-400 text-center leading-relaxed font-body">
                 {feature.description}
               </p>
             </div>

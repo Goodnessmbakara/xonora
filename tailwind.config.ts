@@ -91,6 +91,8 @@ export default {
 					600: 'hsl(var(--xonora-accent-600) / <alpha-value>)'
 				},
 				'xonora-light': 'hsl(var(--xonora-light) / <alpha-value>)',
+				'xonora-warning': 'hsl(var(--xonora-warning) / <alpha-value>)',
+				'surface-900': 'hsl(var(--surface-900) / <alpha-value>)',
 				// Temporary aliases for backward compatibility
 				'yield-dark': 'hsl(var(--xonora-dark) / <alpha-value>)',
 				'yield-green': {
@@ -177,8 +179,8 @@ export default {
 				'float': 'float 3s ease-in-out infinite'
 			},
 			fontFamily: {
-				'tech': ['Orbitron', 'monospace'],
-				'body': ['Inter', 'system-ui', 'sans-serif']
+				'tech': ['NeueHaasGrotDisp', 'system-ui', 'sans-serif'],
+				'body': ['METROPOLIS', 'system-ui', 'sans-serif']
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

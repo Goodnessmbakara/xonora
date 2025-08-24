@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Mail, Twitter } from 'lucide-react'; // Added imports for Mail and Twitter icons
+import BrandButton from './ui/BrandButton';
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -23,27 +24,27 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gray-800">
+    <section id="contact" className="py-20 bg-xonora-secondary-700">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-tech">
             Get in Touch
           </h2>
-          <p className="text-xl text-gray-400 text-center mb-12">
+          <p className="text-xl text-xonora-secondary-400 text-center mb-12 font-body">
             Have questions about Xonora? We're here to help!
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Contact Form */}
-          <div className="bg-gray-900 rounded-xl p-8">
-            <h3 className="text-2xl font-bold mb-6 text-white">
+          <div className="bg-surface-900 rounded-xl p-8">
+            <h3 className="text-2xl font-bold mb-6 text-white font-tech">
               Send us a Message
             </h3>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-xonora-secondary-300 mb-2 font-body">
                   Name
                 </label>
                 <input
@@ -53,13 +54,13 @@ const ContactSection = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-xonora-primary-400 focus:ring-2 focus:ring-xonora-primary-400/20 transition-all duration-300"
+                  className="w-full px-4 py-3 bg-xonora-secondary-600 border border-xonora-secondary-500 rounded-lg text-white placeholder-xonora-secondary-400 focus:outline-none focus:border-xonora-primary-400 focus:ring-2 focus:ring-xonora-primary-400/20 transition-all duration-300"
                   placeholder="Your name"
                 />
               </div>
               
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-xonora-secondary-300 mb-2 font-body">
                   Email
                 </label>
                 <input
@@ -69,13 +70,13 @@ const ContactSection = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-xonora-primary-400 focus:ring-2 focus:ring-xonora-primary-400/20 transition-all duration-300"
+                  className="w-full px-4 py-3 bg-xonora-secondary-600 border border-xonora-secondary-500 rounded-lg text-white placeholder-xonora-secondary-400 focus:outline-none focus:border-xonora-primary-400 focus:ring-2 focus:ring-xonora-primary-400/20 transition-all duration-300"
                   placeholder="your.email@example.com"
                 />
               </div>
               
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-xonora-secondary-300 mb-2 font-body">
                   Message
                 </label>
                 <textarea
@@ -85,23 +86,23 @@ const ContactSection = () => {
                   onChange={handleChange}
                   required
                   rows={5}
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-xonora-primary-400 focus:ring-2 focus:ring-xonora-primary-400/20 resize-none"
+                  className="w-full px-4 py-3 bg-xonora-secondary-600 border border-xonora-secondary-500 rounded-lg text-white placeholder-xonora-secondary-400 focus:outline-none focus:border-xonora-primary-400 focus:ring-2 focus:ring-xonora-primary-400/20 resize-none"
                   placeholder="Tell us how we can help..."
                 />
               </div>
               
-              <button
+              <BrandButton
                 type="submit"
-                className="w-full px-6 py-3 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark font-semibold rounded-lg hover:scale-105 transition-all duration-300"
+                className="w-full"
               >
                 Send Message
-              </button>
+              </BrandButton>
             </form>
           </div>
 
           {/* Contact Information */}
-          <div className="bg-gray-900 rounded-xl p-8">
-            <h3 className="text-2xl font-bold text-xonora-primary-400 mb-6">
+          <div className="bg-surface-900 rounded-xl p-8">
+            <h3 className="text-2xl font-bold text-xonora-primary-400 mb-6 font-tech">
               Contact Information
             </h3>
             
@@ -109,43 +110,43 @@ const ContactSection = () => {
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-xonora-primary-400" />
                 <a
-                  href="mailto:hello@xonora.io"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  href="mailto:xonora25@gmail.com"
+                  className="text-xonora-secondary-300 hover:text-xonora-primary-400 transition-colors font-body"
                 >
-                  hello@xonora.io
+                  xonora25@gmail.com
                 </a>
               </div>
               <div className="flex items-center space-x-3">
                 <Twitter className="w-5 h-5 text-xonora-primary-400" />
                 <a
-                  href="https://twitter.com/Xonora"
+                  href="https://x.com/Xonora_btc"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-xonora-secondary-300 hover:text-xonora-primary-400 transition-colors font-body"
                 >
-                  @Xonora
+                  @xonora_btc
                 </a>
               </div>
             </div>
 
-            <div className="mt-8 p-6 bg-gray-800 rounded-lg">
-              <h4 className="font-semibold text-white mb-3">Support Hours</h4>
-              <p className="text-gray-400 text-sm">
+            <div className="mt-8 p-6 bg-xonora-secondary-700 rounded-lg">
+              <h4 className="font-semibold text-white mb-3 font-body">Support Hours</h4>
+              <p className="text-xonora-secondary-400 text-sm font-body">
                 Monday - Friday: 9:00 AM - 6:00 PM UTC<br />
                 Weekend: 10:00 AM - 4:00 PM UTC
               </p>
             </div>
 
-            <div className="mt-6 p-6 bg-gray-800 rounded-lg">
-              <h4 className="font-semibold text-white mb-3">Quick Links</h4>
+            <div className="mt-6 p-6 bg-xonora-secondary-700 rounded-lg">
+              <h4 className="font-semibold text-white mb-3 font-body">Quick Links</h4>
               <div className="space-y-2 text-sm">
-                <a href="#faq" className="block text-gray-400 hover:text-xonora-primary-400 transition-colors">
+                <a href="#faq" className="block text-xonora-secondary-400 hover:text-xonora-primary-400 transition-colors font-body">
                   FAQ
                 </a>
-                <a href="/staking" className="block text-gray-400 hover:text-xonora-primary-400 transition-colors">
+                <a href="/staking" className="block text-xonora-secondary-400 hover:text-xonora-primary-400 transition-colors font-body">
                   Start Staking
                 </a>
-                <a href="#how-it-works" className="block text-gray-400 hover:text-xonora-primary-400 transition-colors">
+                <a href="#how-it-works" className="block text-xonora-secondary-400 hover:text-xonora-primary-400 transition-colors font-body">
                   How It Works
                 </a>
               </div>

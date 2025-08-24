@@ -12,7 +12,7 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-xonora-dark/95 backdrop-blur-sm border-b border-xonora-secondary-600">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -24,38 +24,38 @@ const Header = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <a
               href="#home"
-              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium font-body"
             >
               Home
             </a>
             <a
               href="#features"
-              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium font-body"
             >
               Features
             </a>
             <a
               href="#how-it-works"
-              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium font-body"
             >
               How It Works
             </a>
             <a
               href="#faq"
-              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-medium font-body"
             >
               FAQ
             </a>
             <a
               href="#contact"
-              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
+              className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-xonora-secondary-600 rounded-lg hover:border-xonora-primary-400 font-body"
             >
               Contact
             </a>
             {isAuthenticated ? (
               <a
                 href="/dashboard"
-                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-xonora-secondary-600 rounded-lg hover:border-xonora-primary-400 font-body"
               >
                 Dashboard
               </a>
@@ -92,39 +92,39 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-800">
+          <div className="md:hidden py-4 border-t border-xonora-secondary-600">
             <nav className="flex flex-col space-y-4">
               <a
                 href="#home"
-                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-body"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </a>
               <a
                 href="#features"
-                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-body"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Features
               </a>
               <a
                 href="#how-it-works"
-                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-body"
                 onClick={() => setIsMenuOpen(false)}
               >
                 How It Works
               </a>
               <a
                 href="#faq"
-                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 font-body"
                 onClick={() => setIsMenuOpen(false)}
               >
                 FAQ
               </a>
               <a
                 href="#contact"
-                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
+                className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-xonora-secondary-600 rounded-lg hover:border-xonora-primary-400 font-body"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
@@ -132,7 +132,7 @@ const Header = () => {
               {isAuthenticated ? (
                 <a
                   href="/dashboard"
-                  className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-yield-gray-600 rounded-lg hover:border-xonora-primary-400"
+                  className="text-xonora-light hover:text-xonora-primary-400 transition-colors duration-300 px-4 py-2 border border-xonora-secondary-600 rounded-lg hover:border-xonora-primary-400 font-body"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Dashboard

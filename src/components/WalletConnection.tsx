@@ -196,3 +196,4 @@ const WalletConnection: React.FC<WalletConnectionProps> = ({
 };
 
 export default WalletConnection;
+

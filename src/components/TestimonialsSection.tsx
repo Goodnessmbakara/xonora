@@ -1,5 +1,6 @@
 
 import React from 'react';
+import BrandButton from './ui/BrandButton';
 
 const TestimonialsSection = () => {
   const testimonials = [
@@ -18,13 +19,13 @@ const TestimonialsSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gray-900">
+    <section className="py-20 bg-surface-900">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-tech">
             What Our Users Say
           </h2>
-          <p className="text-xl text-gray-400 text-center mb-12">
+          <p className="text-xl text-xonora-secondary-400 text-center mb-12 font-body">
             Join thousands of users who are already maximizing their Bitcoin yields with Xonora
           </p>
         </div>
@@ -33,7 +34,7 @@ const TestimonialsSection = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.name}
-              className="bg-gray-800 rounded-xl p-8 hover:scale-105 transition-all duration-300 animate-fade-in"
+              className="bg-xonora-secondary-700 rounded-xl p-8 hover:scale-105 transition-all duration-300 animate-fade-in"
               style={{ animationDelay: `${index * 0.2}s` }}
             >
               {/* Quote Icon */}
@@ -42,7 +43,7 @@ const TestimonialsSection = () => {
               </div>
 
               {/* Content */}
-              <p className="text-gray-300 leading-relaxed mb-6">
+              <p className="text-xonora-secondary-300 leading-relaxed mb-6 font-body">
                 {testimonial.content}
               </p>
 
@@ -52,8 +53,8 @@ const TestimonialsSection = () => {
                   {testimonial.avatar}
                 </div>
                 <div>
-                  <h4 className="font-semibold text-white">{testimonial.name}</h4>
-                  <p className="text-gray-400 text-sm">{testimonial.role}</p>
+                  <h4 className="font-semibold text-white font-body">{testimonial.name}</h4>
+                  <p className="text-xonora-secondary-400 text-sm font-body">{testimonial.role}</p>
                 </div>
               </div>
             </div>
@@ -61,15 +62,17 @@ const TestimonialsSection = () => {
         </div>
 
         <div className="text-center mt-12">
-          <a
-            href="/staking"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-xonora-dark font-semibold rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-xonora-primary-400/25"
+          <BrandButton 
+            href="https://x.com/Xonora_btc" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            size="lg"
           >
             Join Our Community
             <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-          </a>
+          </BrandButton>
         </div>
       </div>
     </section>

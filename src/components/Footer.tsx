@@ -19,42 +19,42 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-gray-900 border-t border-yield-gray-600">
+    <footer className="bg-gray-900 border-t border-xonora-secondary-600">
       <div className="container mx-auto px-6 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Logo and Description */}
           <div className="space-y-4">
             <Logo size="sm" />
-            <p className="text-gray-400 max-w-md">
+            <p className="text-xonora-secondary-400 max-w-md font-body">
               Xonora is an AI-powered Bitcoin yield farming platform that helps you maximize your Bitcoin returns through intelligent staking strategies and optimized yield generation.
             </p>
             <div className="flex space-x-4">
               <a
-                href="mailto:hello@xonora.io"
-                className="text-gray-400 hover:text-white transition-colors"
+                href="mailto:xonora25@gmail.com"
+                className="text-xonora-secondary-400 hover:text-xonora-light transition-colors"
               >
-                hello@xonora.io
+                xonora25@gmail.com
               </a>
               <a
-                href="https://twitter.com/Xonora"
+                href="https://x.com/Xonora_btc"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-xonora-secondary-400 hover:text-xonora-light transition-colors"
               >
-                @Xonora
+                @Xonora_btc
               </a>
             </div>
           </div>
           
           {/* Quick Links */}
           <div>
-            <h4 className="font-tech font-bold text-yield-light mb-4">Quick Links</h4>
+            <h4 className="font-tech font-bold text-xonora-light mb-4">Quick Links</h4>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-yield-gray-400 hover:text-yield-green-400 transition-colors duration-300 text-sm"
+                    className="text-xonora-secondary-400 hover:text-xonora-primary-400 transition-colors duration-300 text-sm"
                   >
                     {link.label}
                   </a>
@@ -65,13 +65,13 @@ const Footer = () => {
           
           {/* Legal */}
           <div>
-            <h4 className="font-tech font-bold text-yield-light mb-4">Legal</h4>
+            <h4 className="font-tech font-bold text-xonora-light mb-4">Legal</h4>
             <ul className="space-y-2">
               {legalLinks.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-yield-gray-400 hover:text-yield-green-400 transition-colors duration-300 text-sm"
+                    className="text-xonora-secondary-400 hover:text-xonora-primary-400 transition-colors duration-300 text-sm"
                   >
                     {link.label}
                   </a>
@@ -82,16 +82,16 @@ const Footer = () => {
           
           {/* Contact Info */}
           <div>
-            <h4 className="font-tech font-bold text-yield-light mb-4">Contact</h4>
+            <h4 className="font-tech font-bold text-xonora-light mb-4">Contact</h4>
             <div className="space-y-2 text-sm">
-              <p className="text-yield-gray-400">hello@xonora.io</p>
-              <p className="text-yield-gray-400">Discord Community</p>
-              <p className="text-yield-gray-400">@Xonora</p>
+              <p className="text-xonora-secondary-400 font-body">xonora25@gmail.com</p>
+              <p className="text-xonora-secondary-400 font-body">Discord Community</p>
+              <p className="text-xonora-secondary-400 font-body">@Xonora_btc</p>
             </div>
           </div>
         </div>
         
-        <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
+        <div className="border-t border-xonora-secondary-600 pt-8 text-center text-xonora-secondary-400">
           <p>© 2024 Xonora. All rights reserved.</p>
         </div>
       </div>

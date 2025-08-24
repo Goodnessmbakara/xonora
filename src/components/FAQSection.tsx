@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import BrandButton from './ui/BrandButton';
 
 const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -36,13 +37,13 @@ const FAQSection = () => {
   };
 
   return (
-    <section id="faq" className="py-20 bg-gray-800">
+    <section id="faq" className="py-20 bg-xonora-secondary-700">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-tech">
             Frequently Asked Questions
           </h2>
-          <p className="text-xl text-gray-400 text-center mb-12">
+          <p className="text-xl text-xonora-secondary-400 text-center mb-12 font-body">
             Get answers to common questions about Xonora
           </p>
         </div>
@@ -51,14 +52,14 @@ const FAQSection = () => {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-gray-900 rounded-lg mb-4 overflow-hidden animate-fade-in"
+              className="bg-surface-900 rounded-lg mb-4 overflow-hidden animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-800 transition-colors duration-300"
+                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-xonora-secondary-600 transition-colors duration-300"
               >
-                <h3 className="text-lg font-semibold text-white pr-4">
+                <h3 className="text-lg font-semibold text-white pr-4 font-body">
                   {faq.question}
                 </h3>
                 <svg 
@@ -72,7 +73,7 @@ const FAQSection = () => {
               </button>
               {openIndex === index && (
                 <div className="px-6 pb-4">
-                  <p className="text-gray-400 leading-relaxed">
+                  <p className="text-xonora-secondary-400 leading-relaxed font-body">
                     {faq.answer}
                   </p>
                 </div>
@@ -82,18 +83,18 @@ const FAQSection = () => {
         </div>
 
         <div className="text-center mt-12">
-          <p className="text-gray-400 mb-4">
+          <p className="text-xonora-secondary-400 mb-4 font-body">
             Still have questions? We're here to help!
           </p>
-          <a
+          <BrandButton
             href="#contact"
-            className="inline-flex items-center px-6 py-3 border-2 border-xonora-primary-400 text-xonora-primary-400 rounded-lg font-semibold hover:bg-xonora-primary-400 hover:text-xonora-dark transition-all duration-300"
+            variant="outline"
           >
             Contact Support
             <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-          </a>
+          </BrandButton>
         </div>
       </div>
     </section>

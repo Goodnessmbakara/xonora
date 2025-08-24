@@ -1,5 +1,6 @@
 
 import React from 'react';
+import BrandButton from './ui/BrandButton';
 
 const QuickStartSection = () => {
   const steps = [
@@ -59,13 +60,13 @@ const QuickStartSection = () => {
   ];
 
   return (
-    <section id="quick-start" className="py-20 bg-gray-900">
+    <section id="quick-start" className="py-20 bg-surface-900">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-tech">
             Get Started in 3 Simple Steps
           </h2>
-          <p className="text-xl text-gray-400 text-center mb-12">
+          <p className="text-xl text-xonora-secondary-400 text-center mb-12 font-body">
             Start earning Bitcoin yields in minutes with our streamlined process
           </p>
         </div>
@@ -74,7 +75,7 @@ const QuickStartSection = () => {
           {steps.map((step, index) => (
             <div
               key={step.number}
-              className="relative bg-gray-800 rounded-xl p-8 text-center hover:scale-105 transition-all duration-300 animate-fade-in"
+              className="relative bg-xonora-secondary-700 rounded-xl p-8 text-center hover:scale-105 transition-all duration-300 animate-fade-in"
               style={{ animationDelay: `${index * 0.2}s` }}
             >
               {/* Step Number */}
@@ -91,7 +92,7 @@ const QuickStartSection = () => {
               <h3 className="text-2xl font-tech font-bold mb-4 text-center text-xonora-primary-400">
                 {step.title}
               </h3>
-              <p className="text-gray-400 text-center leading-relaxed">
+              <p className="text-xonora-secondary-400 text-center leading-relaxed font-body">
                 {step.description}
               </p>
             </div>
@@ -99,15 +100,12 @@ const QuickStartSection = () => {
         </div>
 
         <div className="text-center mt-12">
-          <a
-            href="/staking"
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-xonora-primary-400 to-xonora-primary-600 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-xonora-primary-400/25"
-          >
+          <BrandButton href="/staking">
             Start Earning Now
             <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-          </a>
+          </BrandButton>
         </div>
       </div>
     </section>
