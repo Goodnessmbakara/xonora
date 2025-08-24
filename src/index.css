@@ -1,8 +1,80 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Local Font Declarations */
+@font-face {
+  font-family: 'METROPOLIS';
+  src: url('/fonts/METROPOLIS-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'METROPOLIS';
+  src: url('/fonts/METROPOLIS-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'METROPOLIS';
+  src: url('/fonts/METROPOLIS-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'METROPOLIS';
+  src: url('/fonts/METROPOLIS-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NeueHaasGrotDisp';
+  src: url('/fonts/NeueHaasGrotDisp-15XXThin-Trial.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NeueHaasGrotDisp';
+  src: url('/fonts/NeueHaasGrotDisp-45Light-Trial.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NeueHaasGrotDisp';
+  src: url('/fonts/NeueHaasGrotDisp-65Medium-Trial.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NeueHaasGrotDisp';
+  src: url('/fonts/NeueHaasGrotDisp-75Bold-Trial.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NeueHaasGrotDisp';
+  src: url('/fonts/NeueHaasGrotDisp-95Black-Trial.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
@@ -56,24 +128,25 @@ All colors MUST be HSL.
 
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Xonora brand colors */
+    /* Xonora brand colors - Updated with new brand guidelines */
     --xonora-dark: 0 0% 7%;
-    --xonora-primary-300: 140 59% 65%;
-    --xonora-primary-400: 140 59% 53%;
-    --xonora-primary-500: 163 96% 26%;
-    --xonora-primary-600: 163 96% 20%;
-    --xonora-primary-700: 163 96% 15%;
+    --xonora-primary-300: 164 96% 35%;
+    --xonora-primary-400: 164 96% 30%;
+    --xonora-primary-500: 164 96% 26%;
+    --xonora-primary-600: 164 96% 20%;
+    --xonora-primary-700: 164 96% 15%;
     --xonora-primary-foreground: 0 0% 100%;
-    --xonora-secondary-300: 189 48% 97%;
-    --xonora-secondary-400: 189 48% 93%;
-    --xonora-secondary-500: 172 14% 49%;
-    --xonora-secondary-600: 172 14% 40%;
-    --xonora-secondary-700: 172 14% 30%;
-    --xonora-light: 189 48% 93%;
-    --xonora-accent-300: 108 44% 75%;
-    --xonora-accent-400: 108 44% 72%;
-    --xonora-accent-500: 108 44% 68%;
-    --xonora-accent-600: 108 44% 60%;
+    --xonora-secondary-300: 168 14% 70%;
+    --xonora-secondary-400: 168 14% 60%;
+    --xonora-secondary-500: 168 14% 49%;
+    --xonora-secondary-600: 168 14% 40%;
+    --xonora-secondary-700: 168 14% 30%;
+    --xonora-light: 192 44% 93%;
+    --xonora-accent-300: 142 59% 65%;
+    --xonora-accent-400: 142 59% 58%;
+    --xonora-accent-500: 142 59% 53%;
+    --xonora-accent-600: 142 59% 45%;
+    --xonora-warning: 45 100% 53%;
     --surface-900: 0 0% 9%;
   }
 
@@ -87,16 +160,16 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 140 59% 53%;
+    --primary: 142 59% 53%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 172 14% 40%;
+    --secondary: 168 14% 40%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 108 44% 68%;
+    --accent: 142 59% 53%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 62.8% 30.6%;
@@ -113,6 +186,27 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Xonora brand colors - Dark mode adjustments */
+    --xonora-dark: 0 0% 7%;
+    --xonora-primary-300: 164 96% 40%;
+    --xonora-primary-400: 164 96% 35%;
+    --xonora-primary-500: 164 96% 30%;
+    --xonora-primary-600: 164 96% 25%;
+    --xonora-primary-700: 164 96% 20%;
+    --xonora-primary-foreground: 0 0% 100%;
+    --xonora-secondary-300: 168 14% 60%;
+    --xonora-secondary-400: 168 14% 50%;
+    --xonora-secondary-500: 168 14% 40%;
+    --xonora-secondary-600: 168 14% 30%;
+    --xonora-secondary-700: 168 14% 25%;
+    --xonora-light: 192 44% 85%;
+    --xonora-accent-300: 142 59% 60%;
+    --xonora-accent-400: 142 59% 55%;
+    --xonora-accent-500: 142 59% 50%;
+    --xonora-accent-600: 142 59% 45%;
+    --xonora-warning: 45 100% 60%;
+    --surface-900: 0 0% 9%;
   }
 }
 
