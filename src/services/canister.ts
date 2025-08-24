@@ -1,9 +1,35 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
-import { InternetIdentity } from '@dfinity/auth-client/lib/cjs/providers/internet-identity';
 import { idlFactory } from '../declarations/xonora_backend/xonora_backend.did.js';
 import type { _SERVICE as Xonora } from '../declarations/xonora_backend/xonora_backend.did.d.ts';
 import { getCanisterId, getICHost, getIdentityProvider, getNetwork, isProduction, validateEnvironment } from '../config/canister';
+import { 
+  poolsCache, 
+  portfolioCache, 
+  stakesCache, 
+  systemInfoCache, 
+  cacheKeys, 
+  cachePatterns 
+} from '../utils/cache';
+import { 
+  validateStakingInputs, 
+  validateStakeAmount, 
+  validatePoolId, 
+  validateUserId,
+  validateStakeId,
+  validateStakingRules,
+  getErrorMessage 
+} from '../utils/validation';
+import { 
+  monitoring, 
+  monitorPerformance, 
+  monitorErrors,
+  SystemHealth
+} from '../utils/monitoring';
+import { 
+  rateLimiters, 
+  rateLimit 
+} from '../utils/rateLimiter';
 
 // Types
 export interface Pool {
@@ -40,7 +66,7 @@ export interface SystemInfo {
 
 class CanisterService {
   private agent: HttpAgent | null = null;
-  private actor: Actor<Xonora> | null = null;
+  private actor: any = null; // Using any for now to avoid type issues
   private authClient: AuthClient | null = null;
   private canisterId: string | null = null;
 
@@ -289,6 +315,304 @@ class CanisterService {
   async whoami(): Promise<string> {
     if (!this.actor) throw new Error('Actor not initialized');
     return await this.actor.whoami();
+  }
+
+  // Enhanced methods with caching, validation, and monitoring
+
+  /**
+   * Get pools with caching
+   */
+  async getPoolsWithCache(): Promise<Pool[]> {
+    const cacheKey = cacheKeys.pools();
+    const cached = poolsCache.get(cacheKey);
+    
+    if (cached) {
+      monitoring.logPerformance('getPoolsWithCache', 0, true);
+      return cached;
+    }
+
+    const startTime = Date.now();
+    try {
+      const pools = await this.getPools();
+      poolsCache.set(cacheKey, pools);
+      
+      const duration = Date.now() - startTime;
+      monitoring.logPerformance('getPoolsWithCache', duration, true);
+      
+      return pools;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      monitoring.logPerformance('getPoolsWithCache', duration, false, errorMsg);
+      monitoring.logError(errorMsg, 'getPoolsWithCache');
+      throw error;
+    }
+  }
+
+  /**
+   * Get portfolio with caching
+   */
+  async getPortfolioWithCache(userId: string): Promise<{ ok?: Portfolio; err?: string }> {
+    // Validate user ID
+    const userValidation = validateUserId(userId);
+    if (!userValidation.isValid) {
+      const errorMsg = getErrorMessage(userValidation);
+      monitoring.logError(errorMsg, 'getPortfolioWithCache', userId);
+      throw new Error(errorMsg);
+    }
+
+    const cacheKey = cacheKeys.portfolio(userId);
+    const cached = portfolioCache.get(cacheKey);
+    
+    if (cached) {
+      monitoring.logPerformance('getPortfolioWithCache', 0, true);
+      return cached;
+    }
+
+    const startTime = Date.now();
+    try {
+      const portfolio = await this.getPortfolio(userId);
+      portfolioCache.set(cacheKey, portfolio);
+      
+      const duration = Date.now() - startTime;
+      monitoring.logPerformance('getPortfolioWithCache', duration, true);
+      
+      return portfolio;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      monitoring.logPerformance('getPortfolioWithCache', duration, false, errorMsg);
+      monitoring.logError(errorMsg, 'getPortfolioWithCache', userId);
+      throw error;
+    }
+  }
+
+  /**
+   * Get user stakes with caching
+   */
+  async getUserStakesWithCache(userId: string): Promise<Stake[]> {
+    // Validate user ID
+    const userValidation = validateUserId(userId);
+    if (!userValidation.isValid) {
+      const errorMsg = getErrorMessage(userValidation);
+      monitoring.logError(errorMsg, 'getUserStakesWithCache', userId);
+      throw new Error(errorMsg);
+    }
+
+    const cacheKey = cacheKeys.userStakes(userId);
+    const cached = stakesCache.get(cacheKey);
+    
+    if (cached) {
+      monitoring.logPerformance('getUserStakesWithCache', 0, true);
+      return cached;
+    }
+
+    const startTime = Date.now();
+    try {
+      const stakes = await this.getUserStakes(userId);
+      stakesCache.set(cacheKey, stakes);
+      
+      const duration = Date.now() - startTime;
+      monitoring.logPerformance('getUserStakesWithCache', duration, true);
+      
+      return stakes;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      monitoring.logPerformance('getUserStakesWithCache', duration, false, errorMsg);
+      monitoring.logError(errorMsg, 'getUserStakesWithCache', userId);
+      throw error;
+    }
+  }
+
+  /**
+   * Enhanced stake method with validation and rate limiting
+   */
+  async stakeWithValidation(amount: bigint, poolId: string, userId: string): Promise<{ ok?: number; err?: string }> {
+    const startTime = Date.now();
+    
+    try {
+      // Validate inputs
+      const validation = validateStakingInputs(amount, poolId, userId);
+      if (!validation.isValid) {
+        const errorMsg = getErrorMessage(validation);
+        monitoring.logError(errorMsg, 'stakeWithValidation', userId);
+        throw new Error(errorMsg);
+      }
+
+      // Check rate limit
+      const rateLimitResult = rateLimiters.stake.isAllowed(userId, 'stake');
+      if (!rateLimitResult.allowed) {
+        const errorMsg = `Rate limit exceeded. Try again in ${rateLimitResult.retryAfter} seconds.`;
+        monitoring.logError(errorMsg, 'stakeWithValidation', userId);
+        throw new Error(errorMsg);
+      }
+
+      // Get user stakes for business rule validation
+      const userStakes = await this.getUserStakesWithCache(userId);
+      const businessValidation = validateStakingRules(amount, poolId, userStakes);
+      if (!businessValidation.isValid) {
+        const errorMsg = getErrorMessage(businessValidation);
+        monitoring.logError(errorMsg, 'stakeWithValidation', userId);
+        throw new Error(errorMsg);
+      }
+
+      // Perform stake operation
+      const result = await this.stake(amount, poolId);
+      
+      // Record successful request
+      rateLimiters.stake.recordRequest(userId, 'stake', true);
+      
+      // Invalidate related caches
+      this.invalidateUserCaches(userId);
+      
+      const duration = Date.now() - startTime;
+      monitoring.logPerformance('stakeWithValidation', duration, true);
+      
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      
+      // Record failed request
+      rateLimiters.stake.recordRequest(userId, 'stake', false);
+      
+      monitoring.logPerformance('stakeWithValidation', duration, false, errorMsg);
+      monitoring.logError(errorMsg, 'stakeWithValidation', userId);
+      throw error;
+    }
+  }
+
+  /**
+   * Enhanced unstake method with validation and rate limiting
+   */
+  async unstakeWithValidation(stakeId: number, userId: string): Promise<{ ok?: bigint; err?: string }> {
+    const startTime = Date.now();
+    
+    try {
+      // Validate stake ID
+      const stakeValidation = validateStakeId(stakeId);
+      if (!stakeValidation.isValid) {
+        const errorMsg = getErrorMessage(stakeValidation);
+        monitoring.logError(errorMsg, 'unstakeWithValidation', userId);
+        throw new Error(errorMsg);
+      }
+
+      // Validate user ID
+      const userValidation = validateUserId(userId);
+      if (!userValidation.isValid) {
+        const errorMsg = getErrorMessage(userValidation);
+        monitoring.logError(errorMsg, 'unstakeWithValidation', userId);
+        throw new Error(errorMsg);
+      }
+
+      // Check rate limit
+      const rateLimitResult = rateLimiters.unstake.isAllowed(userId, 'unstake');
+      if (!rateLimitResult.allowed) {
+        const errorMsg = `Rate limit exceeded. Try again in ${rateLimitResult.retryAfter} seconds.`;
+        monitoring.logError(errorMsg, 'unstakeWithValidation', userId);
+        throw new Error(errorMsg);
+      }
+
+      // Perform unstake operation
+      const result = await this.unstake(stakeId);
+      
+      // Record successful request
+      rateLimiters.unstake.recordRequest(userId, 'unstake', true);
+      
+      // Invalidate related caches
+      this.invalidateUserCaches(userId);
+      
+      const duration = Date.now() - startTime;
+      monitoring.logPerformance('unstakeWithValidation', duration, true);
+      
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      
+      // Record failed request
+      rateLimiters.unstake.recordRequest(userId, 'unstake', false);
+      
+      monitoring.logPerformance('unstakeWithValidation', duration, false, errorMsg);
+      monitoring.logError(errorMsg, 'unstakeWithValidation', userId);
+      throw error;
+    }
+  }
+
+  /**
+   * Invalidate user-related caches
+   */
+  private invalidateUserCaches(userId: string): void {
+    portfolioCache.delete(cacheKeys.portfolio(userId));
+    stakesCache.delete(cacheKeys.userStakes(userId));
+  }
+
+  /**
+   * Get system health information
+   */
+  async getSystemHealth(): Promise<SystemHealth> {
+    const startTime = Date.now();
+    try {
+      const health = await monitoring.checkSystemHealth();
+      const duration = Date.now() - startTime;
+      monitoring.logPerformance('getSystemHealth', duration, true);
+      return health;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      monitoring.logPerformance('getSystemHealth', duration, false, errorMsg);
+      monitoring.logError(errorMsg, 'getSystemHealth');
+      throw error;
+    }
+  }
+
+  /**
+   * Get monitoring statistics
+   */
+  getMonitoringStats(): Record<string, any> {
+    return {
+      performance: monitoring.getPerformanceStats(),
+      errors: monitoring.getErrorStats(),
+      cache: {
+        pools: poolsCache.getStats(),
+        portfolio: portfolioCache.getStats(),
+        stakes: stakesCache.getStats(),
+        systemInfo: systemInfoCache.getStats()
+      },
+      rateLimits: {
+        stake: rateLimiters.stake.getStats(),
+        unstake: rateLimiters.unstake.getStats(),
+        query: rateLimiters.query.getStats(),
+        auth: rateLimiters.auth.getStats(),
+        global: rateLimiters.global.getStats()
+      }
+    };
+  }
+
+  /**
+   * Clear all caches
+   */
+  clearAllCaches(): void {
+    poolsCache.clear();
+    portfolioCache.clear();
+    stakesCache.clear();
+    systemInfoCache.clear();
+  }
+
+  /**
+   * Cleanup old data
+   */
+  cleanup(): void {
+    // Clean up rate limiters
+    rateLimiters.stake.cleanup();
+    rateLimiters.unstake.cleanup();
+    rateLimiters.query.cleanup();
+    rateLimiters.auth.cleanup();
+    rateLimiters.global.cleanup();
+    
+    // Clean up monitoring data
+    monitoring.clearOldData();
   }
 }
 
