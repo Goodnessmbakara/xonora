@@ -32,7 +32,7 @@ Open the browser developer console and look for these log messages:
 ✅ AuthClient created successfully
 🔍 Checking authentication status...
 🔐 Authentication status: false
-👤 User is not authenticated, ready for login
+👤 User is not authenticated, setting up fallback actor...
 ```
 
 #### Step 2: Verify Configuration
@@ -54,7 +54,35 @@ Verify the backend canister is accessible:
 dfx canister call dtzfv-syaaa-aaaap-qqcjq-cai getSystemInfo --network ic
 ```
 
-### 2. Authentication Flow Issues
+### 2. Signature Verification Errors
+
+**Symptoms:**
+- Console shows: `{isAuth: true, hasActor: true}`
+- POST requests failing with `400 (Bad Request)`
+- Error: "Invalid signature: Invalid basic signature: EcdsaP256 signature could not be verified"
+- Error: "Expected to find result for path subnet, but instead found nothing"
+
+**Root Cause:**
+The Internet Computer agent is having trouble with signature verification or subnet key fetching.
+
+**Solutions Implemented:**
+
+#### Automatic Fallback
+The application now automatically falls back to a simpler configuration when signature verification fails:
+
+1. **Primary**: Try authenticated actor with signature verification
+2. **Fallback**: Use authenticated actor without signature verification
+3. **Final Fallback**: Use unauthenticated actor for read-only operations
+
+#### Console Logs to Look For:
+```
+🔧 Setting up actor with identity...
+⚠️ Actor connection test failed: [signature error]
+🔄 Retrying with different agent configuration...
+✅ Actor recreated with simplified configuration
+```
+
+### 3. Authentication Flow Issues
 
 **Symptoms:**
 - Login button doesn't work
@@ -80,7 +108,7 @@ Check for:
 - Network connectivity to ic0.app
 - Firewall or proxy blocking connections
 
-### 3. Actor Creation Failures
+### 4. Actor Creation Failures
 
 **Symptoms:**
 - Error during actor setup
@@ -135,12 +163,14 @@ The application provides detailed console logs with emojis for easy identificati
 - ✅ Success messages
 - ❌ Error messages
 - ⚠️ Warning messages
+- 🔄 Fallback attempts
 
 #### Network Tab
 Check for:
 - Failed requests to ic0.app
 - CORS errors
 - Authentication requests
+- Signature verification failures
 
 #### Application Tab
 Check for:
@@ -194,11 +224,26 @@ Disable browser extensions that might interfere with:
 - IndexedDB
 - Network requests
 
+### 5. Signature Verification Issues
+If you see signature verification errors:
+1. **Refresh the page** - The app will automatically try fallback configurations
+2. **Clear browser cache** - Remove any cached signature data
+3. **Try a different browser** - Some browsers handle IC signatures differently
+4. **Check network connectivity** - Ensure stable connection to ic0.app
+
 ## Error Messages and Meanings
 
 ### "Actor not initialized"
 - **Cause**: No authenticated actor available
 - **Solution**: Complete Internet Identity authentication
+
+### "Invalid signature"
+- **Cause**: Signature verification failed
+- **Solution**: App automatically falls back to simpler configuration
+
+### "Expected to find result for path subnet"
+- **Cause**: Subnet key fetching failed
+- **Solution**: App automatically disables signature verification
 
 ### "Auth client not initialized"
 - **Cause**: AuthClient creation failed
@@ -225,6 +270,7 @@ If you're still experiencing issues:
 3. **Test with a different browser** to rule out browser-specific issues
 4. **Check network connectivity** to IC endpoints
 5. **Review the configuration** to ensure canister IDs are correct
+6. **Look for fallback messages** in console - the app may be working with reduced functionality
 
 ## Contact Information
 
@@ -236,4 +282,4 @@ If you're still experiencing issues:
 
 - **Frontend**: https://dg6uy-tqaaa-aaaap-qqcka-cai.icp0.io/
 - **Backend**: `dtzfv-syaaa-aaaap-qqcjq-cai`
-- **Status**: ✅ Running on mainnet
+- **Status**: ✅ Running on mainnet with fallback support
