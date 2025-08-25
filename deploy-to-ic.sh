@@ -1,69 +1,85 @@
 #!/bin/bash
 
-# Xonora Backend Deployment to IC Mainnet
-echo "🚀 Deploying Xonora Backend to IC Mainnet..."
+# Xonora Mainnet Deployment Script
+# This script deploys the frontend to IC mainnet
 
-# Set environment variable to suppress identity warning
-export DFX_WARNING=-mainnet_plaintext_identity
+set -e
 
-# Validate environment variables
-echo "🔍 Validating environment variables..."
+echo "🚀 Starting Xonora mainnet deployment..."
+
+# Check if backend canister ID is set
 if [ -z "$VITE_CANISTER_ID_XONORA_BACKEND" ]; then
-    echo "⚠️  VITE_CANISTER_ID_XONORA_BACKEND is not set (this is expected for first deployment)"
+    echo "✅ Using deployed backend canister ID: dtzfv-syaaa-aaaap-qqcjq-cai"
+    export VITE_CANISTER_ID_XONORA_BACKEND=dtzfv-syaaa-aaaap-qqcjq-cai
 else
-    echo "✅ VITE_CANISTER_ID_XONORA_BACKEND is set: $VITE_CANISTER_ID_XONORA_BACKEND"
+    echo "✅ Backend canister ID already set: $VITE_CANISTER_ID_XONORA_BACKEND"
 fi
 
-if [ "$VITE_NETWORK" != "ic" ]; then
-    echo "⚠️  VITE_NETWORK should be set to 'ic' for production deployment"
-fi
+# Set network to mainnet
+export VITE_DFX_NETWORK=ic
+export VITE_IC_HOST=https://ic0.app
+export VITE_IDENTITY_PROVIDER=https://identity.ic0.app
 
-# Check cycles balance
-echo "💰 Checking cycles balance..."
-dfx cycles balance --network ic
+echo "🌐 Network configuration:"
+echo "   - Network: $VITE_DFX_NETWORK"
+echo "   - IC Host: $VITE_IC_HOST"
+echo "   - Identity Provider: $VITE_IDENTITY_PROVIDER"
 
-# Check if we have enough cycles
-CYCLES=$(dfx cycles balance --network ic | grep -oE '[0-9]+\.[0-9]+')
-if (( $(echo "$CYCLES < 0.1" | bc -l) )); then
-    echo "❌ Insufficient cycles. You need at least 0.1 TC to deploy."
-    echo "💡 Get free cycles from: https://faucet.dfinity.org/"
+# Verify backend canister is running
+echo "🔍 Verifying backend canister status..."
+if ! dfx canister status dtzfv-syaaa-aaaap-qqcjq-cai --network ic > /dev/null 2>&1; then
+    echo "❌ Error: Backend canister is not accessible"
+    echo "   Please ensure the backend is deployed and running"
     exit 1
 fi
 
-# Deploy backend canister
-echo "📦 Deploying backend canister..."
-dfx deploy xonora_backend --network ic
+echo "✅ Backend canister is accessible"
 
-if [ $? -eq 0 ]; then
-    echo "✅ Backend deployed successfully!"
-    
-    # Get the canister ID
-    CANISTER_ID=$(dfx canister id xonora_backend --network ic)
-    echo "🆔 Backend Canister ID: $CANISTER_ID"
-    
-    # Initialize the backend
-    echo "🔧 Initializing backend..."
-    dfx canister call xonora_backend initialize --network ic
-    
-    if [ $? -eq 0 ]; then
-        echo "✅ Backend initialized successfully!"
-        echo ""
-        echo "🎉 DEPLOYMENT COMPLETE!"
-        echo "📋 Next steps:"
-        echo "1. Set these environment variables in your deployment platform:"
-        echo "   VITE_CANISTER_ID_XONORA_BACKEND=$CANISTER_ID"
-        echo "   VITE_NETWORK=ic"
-        echo "   VITE_IC_HOST=https://ic0.app"
-        echo "2. Verify canister accessibility:"
-        echo "   dfx canister call $CANISTER_ID whoami --network ic"
-        echo "3. Build and deploy your frontend with the new environment variables"
-        echo "4. Your live site will now work with the backend!"
-    else
-        echo "❌ Failed to initialize backend"
-    fi
-else
-    echo "❌ Failed to deploy backend"
+# Build the frontend
+echo "🔨 Building frontend..."
+npm run build
+
+if [ $? -ne 0 ]; then
+    echo "❌ Build failed"
+    exit 1
 fi
+
+echo "✅ Frontend built successfully"
+
+# Deploy to IC
+echo "🚀 Deploying to IC mainnet..."
+dfx deploy xonora_frontend --network ic
+
+if [ $? -ne 0 ]; then
+    echo "❌ Deployment failed"
+    exit 1
+fi
+
+echo "✅ Deployment successful!"
+
+# Get the frontend canister ID
+FRONTEND_CANISTER_ID=$(dfx canister id xonora_frontend --network ic)
+echo "🎉 Frontend deployed to: $FRONTEND_CANISTER_ID"
+
+# Display access URLs
+echo ""
+echo "🌐 Access URLs:"
+echo "   - Frontend: https://$FRONTEND_CANISTER_ID.icp0.io"
+echo "   - Backend Candid: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=dtzfv-syaaa-aaaap-qqcjq-cai"
+echo ""
+echo "🔧 Environment Variables Used:"
+echo "   - VITE_CANISTER_ID_XONORA_BACKEND=$VITE_CANISTER_ID_XONORA_BACKEND"
+echo "   - VITE_DFX_NETWORK=$VITE_DFX_NETWORK"
+echo "   - VITE_IC_HOST=$VITE_IC_HOST"
+echo "   - VITE_IDENTITY_PROVIDER=$VITE_IDENTITY_PROVIDER"
+echo ""
+echo "🎯 Next Steps:"
+echo "   1. Test the application at: https://$FRONTEND_CANISTER_ID.icp0.io"
+echo "   2. Verify authentication works with Internet Identity"
+echo "   3. Test staking functionality"
+echo "   4. Monitor canister cycles and performance"
+echo ""
+echo "✅ Deployment complete!"
 
 
 

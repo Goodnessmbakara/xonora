@@ -64,11 +64,19 @@ export interface SystemInfo {
   totalStakes: number;
 }
 
+export interface CkBTCBalance {
+  balance: bigint;
+  balanceInBTC: number;
+  availableForStaking: bigint;
+  availableForStakingInBTC: number;
+}
+
 class CanisterService {
   private agent: HttpAgent | null = null;
   private actor: any = null; // Using any for now to avoid type issues
   private authClient: AuthClient | null = null;
   private canisterId: string | null = null;
+  private ckBTCLedgerActor: any = null;
 
   async initialize() {
     try {
@@ -138,6 +146,9 @@ class CanisterService {
         canisterId: this.canisterId,
       });
 
+      // Setup ckBTC ledger actor
+      await this.setupCkBTCLedgerActor();
+
       console.log('Actor setup complete successfully', { 
         canisterId: this.canisterId,
         principal: principal.toText(),
@@ -146,6 +157,26 @@ class CanisterService {
     } catch (error) {
       console.error('Error in setupActorWithIdentity:', error);
       throw error;
+    }
+  }
+
+  private async setupCkBTCLedgerActor() {
+    try {
+      // ckBTC ledger canister ID on mainnet
+      const ckBTCLedgerId = 'mxzaz-hqaaa-aaaar-qaada-cai';
+      
+      // Import ckBTC ledger interface
+      const { idlFactory: ckBTCIdlFactory } = await import('../declarations/ckbtc_ledger/ckbtc_ledger.did.js');
+      
+      this.ckBTCLedgerActor = Actor.createActor(ckBTCIdlFactory, {
+        agent: this.agent,
+        canisterId: ckBTCLedgerId,
+      });
+      
+      console.log('ckBTC ledger actor setup complete');
+    } catch (error) {
+      console.warn('Failed to setup ckBTC ledger actor:', error);
+      // Don't fail the whole setup if ckBTC ledger is not available
     }
   }
 
@@ -186,6 +217,7 @@ class CanisterService {
       // Clear actor and agent after logout
       this.actor = null;
       this.agent = null;
+      this.ckBTCLedgerActor = null;
     }
   }
 
@@ -242,6 +274,54 @@ class CanisterService {
         console.error('Environment variable error during retry. Please check your deployment configuration.');
       }
       return false;
+    }
+  }
+
+  // ckBTC Balance checking methods
+  async getCkBTCBalance(userId: string): Promise<CkBTCBalance> {
+    if (!this.ckBTCLedgerActor) {
+      throw new Error('ckBTC ledger not available');
+    }
+
+    try {
+      const balance = await this.ckBTCLedgerActor.icrc1_balance_of({
+        owner: { principal: userId },
+        subaccount: []
+      });
+
+      const balanceInBTC = Number(balance) / 100_000_000; // Convert from satoshis to BTC
+      
+      return {
+        balance,
+        balanceInBTC,
+        availableForStaking: balance, // For now, assume all balance is available
+        availableForStakingInBTC: balanceInBTC
+      };
+    } catch (error) {
+      console.error('Failed to get ckBTC balance:', error);
+      throw new Error('Failed to retrieve ckBTC balance');
+    }
+  }
+
+  async checkBalanceForStaking(userId: string, stakeAmount: bigint): Promise<{ canStake: boolean; availableBalance: bigint; shortfall?: bigint }> {
+    try {
+      const balance = await this.getCkBTCBalance(userId);
+      
+      if (balance.balance >= stakeAmount) {
+        return {
+          canStake: true,
+          availableBalance: balance.balance
+        };
+      } else {
+        return {
+          canStake: false,
+          availableBalance: balance.balance,
+          shortfall: stakeAmount - balance.balance
+        };
+      }
+    } catch (error) {
+      console.error('Failed to check balance for staking:', error);
+      throw new Error('Failed to check balance for staking');
     }
   }
 
@@ -423,6 +503,15 @@ class CanisterService {
       const rateLimitResult = rateLimiters.stake.isAllowed(userId, 'stake');
       if (!rateLimitResult.allowed) {
         const errorMsg = `Rate limit exceeded. Try again in ${rateLimitResult.retryAfter} seconds.`;
+        monitoring.logError(errorMsg, 'stakeWithValidation', userId);
+        throw new Error(errorMsg);
+      }
+
+      // Check balance before staking
+      const balanceCheck = await this.checkBalanceForStaking(userId, amount);
+      if (!balanceCheck.canStake) {
+        const shortfallInBTC = Number(balanceCheck.shortfall) / 100_000_000;
+        const errorMsg = `Insufficient balance. You have ${Number(balanceCheck.availableBalance) / 100_000_000} ckBTC, but need ${Number(amount) / 100_000_000} ckBTC. Shortfall: ${shortfallInBTC} ckBTC`;
         monitoring.logError(errorMsg, 'stakeWithValidation', userId);
         throw new Error(errorMsg);
       }

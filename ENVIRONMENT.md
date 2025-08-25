@@ -1,120 +1,76 @@
-# Environment Configuration for Mainnet Deployment
+# Environment Configuration for Xonora Mainnet
 
-This document describes the environment variables required for deploying Xonora to the Internet Computer mainnet.
+## Overview
+Xonora is configured for mainnet-only deployment on the Internet Computer (ICP). This document provides the complete environment setup required for production deployment.
 
 ## Required Environment Variables
 
-### Network Configuration
-```bash
-VITE_NETWORK=ic
-```
-- **Purpose**: Specifies the network to use
-- **Value**: Always `ic` for mainnet deployment
-- **Required**: Yes
-
 ### Backend Canister ID
 ```bash
-VITE_CANISTER_ID_XONORA_BACKEND=your-deployed-canister-id-here
-```
-- **Purpose**: The deployed backend canister ID on mainnet
-- **Format**: Canister ID (e.g., `abc123-def456-ghi789-jkl012-mno345-pqr678-stu901-vwx234-yz567`)
-- **Required**: Yes
-- **How to get**: Deploy the backend canister using `dfx deploy --network ic`
-
-### Internet Identity Configuration
-```bash
-VITE_CANISTER_ID_INTERNET_IDENTITY=rdmx6-jaaaa-aaaaa-aaadq-cai
-```
-- **Purpose**: The mainnet Internet Identity canister ID
-- **Value**: Fixed mainnet canister ID
-- **Required**: No (defaults to mainnet ID)
-
-### IC Host Configuration
-```bash
-VITE_IC_HOST=https://ic0.app
-```
-- **Purpose**: The Internet Computer mainnet host URL
-- **Value**: Mainnet host URL
-- **Required**: No (defaults to mainnet URL)
-
-### Identity Provider
-```bash
-VITE_IDENTITY_PROVIDER=https://identity.ic0.app
-```
-- **Purpose**: The Internet Identity provider URL
-- **Value**: Mainnet identity provider URL
-- **Required**: No (defaults to mainnet URL)
-
-## Deployment Setup
-
-### 1. Deploy Backend Canister
-```bash
-# Build and deploy to mainnet
-dfx build --network ic
-dfx deploy --network ic --no-wallet
-
-# Get the deployed canister ID
-dfx canister id xonora_backend --network ic
+VITE_CANISTER_ID_XONORA_BACKEND=dtzfv-syaaa-aaaap-qqcjq-cai
 ```
 
-### 2. Set Environment Variables
-Set the following environment variables in your deployment platform:
-
+### Network Configuration
 ```bash
-VITE_NETWORK=ic
-VITE_CANISTER_ID_XONORA_BACKEND=<your-deployed-canister-id>
-VITE_CANISTER_ID_INTERNET_IDENTITY=rdmx6-jaaaa-aaaaa-aaadq-cai
+VITE_DFX_NETWORK=ic
 VITE_IC_HOST=https://ic0.app
 VITE_IDENTITY_PROVIDER=https://identity.ic0.app
-```
-
-### 3. Deploy Frontend
-```bash
-# Build for production
-npm run build
-
-# Deploy to your preferred platform (Vercel, Netlify, etc.)
 ```
 
 ## Platform-Specific Setup
 
-### Vercel
-1. Go to your project settings
-2. Add environment variables in the "Environment Variables" section
-3. Deploy your project
+### Vercel Deployment
+1. Go to your Vercel project dashboard
+2. Navigate to Settings → Environment Variables
+3. Add the following variables:
+   ```
+   VITE_CANISTER_ID_XONORA_BACKEND=dtzfv-syaaa-aaaap-qqcjq-cai
+   VITE_DFX_NETWORK=ic
+   VITE_IC_HOST=https://ic0.app
+   VITE_IDENTITY_PROVIDER=https://identity.ic0.app
+   ```
 
-### Netlify
-1. Go to your site settings
-2. Add environment variables in the "Environment variables" section
-3. Deploy your site
+### Netlify Deployment
+1. Go to your Netlify site dashboard
+2. Navigate to Site settings → Environment variables
+3. Add the following variables:
+   ```
+   VITE_CANISTER_ID_XONORA_BACKEND=dtzfv-syaaa-aaaap-qqcjq-cai
+   VITE_DFX_NETWORK=ic
+   VITE_IC_HOST=https://ic0.app
+   VITE_IDENTITY_PROVIDER=https://identity.ic0.app
+   ```
 
-### IC Frontend
-1. Set environment variables in your deployment configuration
-2. Deploy using the IC frontend canister
+### IC Frontend Canister
+1. Deploy using the provided deployment script:
+   ```bash
+   ./deploy-to-ic.sh
+   ```
+2. The script will automatically set the environment variables
 
-## Troubleshooting
+## Verification
 
-### Missing Canister ID
-If you see an error about missing `VITE_CANISTER_ID_XONORA_BACKEND`:
-1. Deploy your backend canister first
-2. Copy the canister ID from the deployment output
-3. Set the environment variable with the correct canister ID
+### Backend Status
+- **Canister ID**: `dtzfv-syaaa-aaaap-qqcjq-cai`
+- **Status**: Running on mainnet
+- **Candid Interface**: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=dtzfv-syaaa-aaaap-qqcjq-cai
 
-### Authentication Issues
-If users can't authenticate:
-1. Verify `VITE_IDENTITY_PROVIDER` is set to `https://identity.ic0.app`
-2. Ensure `VITE_CANISTER_ID_INTERNET_IDENTITY` is set correctly
-3. Check that your backend canister is properly deployed
+### Test Backend Connection
+```bash
+# Test system info
+dfx canister call dtzfv-syaaa-aaaap-qqcjq-cai getSystemInfo --network ic
 
-### Network Issues
-If the app can't connect to the IC:
-1. Verify `VITE_IC_HOST` is set to `https://ic0.app`
-2. Check that your backend canister is accessible
-3. Ensure your deployment platform allows HTTPS connections
+# Test pools
+dfx canister call dtzfv-syaaa-aaaap-qqcjq-cai getPools --network ic
+```
 
 ## Security Notes
+- All environment variables use the `VITE_` prefix for client-side access
+- Backend canister is deployed with secure identity
+- Internet Identity integration is configured for mainnet
+- No local development dependencies remain
 
-- Never commit environment variables to version control
-- Use secure environment variable management in your deployment platform
-- Regularly rotate any sensitive credentials
-- Monitor your canister for unusual activity
+## Troubleshooting
+- Ensure all environment variables are set before building
+- Verify backend canister is running: `dfx canister status dtzfv-syaaa-aaaap-qqcjq-cai --network ic`
+- Check cycles balance: `dfx canister info dtzfv-syaaa-aaaap-qqcjq-cai --network ic`

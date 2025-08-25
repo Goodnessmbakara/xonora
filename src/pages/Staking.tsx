@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import IdentityConnection from '../components/IdentityConnection';
 import { canisterService } from '../services/canister';
-import type { Pool, Stake } from '../services/canister';
+import type { Pool, Stake, CkBTCBalance } from '../services/canister';
 
 const Staking = () => {
   const { isAuthenticated, principal } = useAuth();
@@ -11,8 +11,14 @@ const Staking = () => {
   const [stakeAmount, setStakeAmount] = useState('');
   const [pools, setPools] = useState<Pool[]>([]);
   const [userStakes, setUserStakes] = useState<Stake[]>([]);
+  const [userBalance, setUserBalance] = useState<CkBTCBalance | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Helper function to calculate total staked amount
+  const getTotalStakedAmount = () => {
+    return userStakes.reduce((total, stake) => total + Number(stake.amount), 0) / 100_000_000;
+  };
 
   // Load pools and user stakes from backend
   const loadData = async () => {
@@ -27,7 +33,7 @@ const Staking = () => {
       console.log('Loaded pools:', poolsData);
       setPools(poolsData);
       
-      // Load user stakes if authenticated
+      // Load user stakes and balance if authenticated
       if (isAuthenticated && principal) {
         try {
           const stakesData = await canisterService.getUserStakes(principal);
@@ -36,6 +42,15 @@ const Staking = () => {
         } catch (err) {
           console.warn('Failed to load user stakes:', err);
           // Don't fail the whole load if user stakes fail
+        }
+
+        try {
+          const balanceData = await canisterService.getCkBTCBalance(principal);
+          console.log('Loaded user balance:', balanceData);
+          setUserBalance(balanceData);
+        } catch (err) {
+          console.warn('Failed to load user balance:', err);
+          // Don't fail the whole load if balance fails
         }
       }
     } catch (err) {
@@ -73,6 +88,16 @@ const Staking = () => {
         throw new Error('Not authenticated. Please connect your wallet first.');
       }
 
+      // Check balance before staking
+      if (principal) {
+        const balanceCheck = await canisterService.checkBalanceForStaking(principal, amountInSatoshis);
+        if (!balanceCheck.canStake) {
+          const shortfallInBTC = Number(balanceCheck.shortfall) / 100_000_000;
+          const availableInBTC = Number(balanceCheck.availableBalance) / 100_000_000;
+          throw new Error(`Insufficient balance. You have ${availableInBTC.toFixed(8)} ckBTC, but need ${(Number(amountInSatoshis) / 100_000_000).toFixed(8)} ckBTC. Shortfall: ${shortfallInBTC.toFixed(8)} ckBTC`);
+        }
+      }
+
       const result = await canisterService.stake(amountInSatoshis, selectedPool);
       console.log('Stake result:', result);
 
@@ -80,7 +105,7 @@ const Staking = () => {
         console.log('✅ Stake successful, ID:', result.ok);
         alert(`Successfully staked! Stake ID: ${result.ok}`);
         setStakeAmount('');
-        // Reload data to show new stake
+        // Reload data to show new stake and updated balance
         await loadData();
       } else {
         throw new Error(result.err || 'Staking failed');
@@ -115,7 +140,7 @@ const Staking = () => {
         const amountInBTC = Number(result.ok) / 100_000_000;
         console.log('Unstake successful, amount:', amountInBTC);
         alert(`Successfully unstaked! Received: ${amountInBTC.toFixed(8)} BTC`);
-        // Reload data to update stakes
+        // Reload data to update stakes and balance
         await loadData();
       } else {
         throw new Error(result.err || 'Unstaking failed');
@@ -163,6 +188,35 @@ const Staking = () => {
             Choose your strategy and start earning Bitcoin yields with our AI-optimized pools.
           </p>
         </div>
+
+        {/* Balance Display */}
+        {userBalance && (
+          <div className="bg-xonora-secondary-700 rounded-xl p-6 mb-8">
+            <h3 className="text-xl font-tech font-bold mb-4 text-xonora-primary-400">
+              Your ckBTC Balance
+            </h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-xonora-light mb-2">
+                  {userBalance.balanceInBTC.toFixed(8)}
+                </div>
+                <div className="text-sm text-xonora-secondary-400">Total Balance</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-xonora-primary-400 mb-2">
+                  {userBalance.availableForStakingInBTC.toFixed(8)}
+                </div>
+                <div className="text-sm text-xonora-secondary-400">Available for Staking</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-xonora-accent-400 mb-2">
+                  {getTotalStakedAmount().toFixed(8)}
+                </div>
+                <div className="text-sm text-xonora-secondary-400">Currently Staked</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {(isLoading || loadingData) && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -276,13 +330,17 @@ const Staking = () => {
                   onChange={(e) => setStakeAmount(e.target.value)}
                   step="0.001"
                   min="0.001"
+                  max={userBalance ? userBalance.availableForStakingInBTC : undefined}
                   required
                   className="w-full px-4 py-3 bg-xonora-secondary-600 border border-xonora-secondary-500 rounded-lg text-xonora-light focus:border-xonora-primary-400 focus:outline-none"
                   placeholder="0.000"
                 />
-                <p className="text-sm text-xonora-secondary-400 mt-1 font-body">
-                  Minimum stake: 0.001 ckBTC
-                </p>
+                <div className="flex justify-between text-sm text-xonora-secondary-400 mt-1">
+                  <span>Minimum stake: 0.001 ckBTC</span>
+                  {userBalance && (
+                    <span>Available: {userBalance.availableForStakingInBTC.toFixed(8)} ckBTC</span>
+                  )}
+                </div>
               </div>
 
               {/* Estimated Returns */}
@@ -314,7 +372,7 @@ const Staking = () => {
 
               <button
                 type="submit"
-                disabled={isLoading || !stakeAmount || parseFloat(stakeAmount) <= 0}
+                disabled={isLoading || !stakeAmount || parseFloat(stakeAmount) <= 0 || (userBalance && parseFloat(stakeAmount) > userBalance.availableForStakingInBTC)}
                 className="w-full px-6 py-3 border-2 border-xonora-primary-400 text-xonora-primary-400 rounded-lg font-semibold hover:bg-xonora-primary-400 hover:text-xonora-dark transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? 'Processing...' : 'Stake ckBTC'}

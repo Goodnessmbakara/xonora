@@ -1,0 +1,50 @@
+type APY = float64;
+type Amount = nat64;
+type Pool = record {
+  id : PoolId;
+  apy : APY;
+  maxCapacity : Amount;
+  name : text;
+  isActive : bool;
+  totalStaked : Amount;
+};
+type PoolId = text;
+type Portfolio = record {
+  userId : UserId;
+  totalEarned : Amount;
+  activeStakes : vec StakeId;
+  totalStaked : Amount;
+};
+type Result = variant { ok : Amount; err : text };
+type Result_1 = variant { ok : StakeId; err : text };
+type Result_2 = variant { ok : text; err : text };
+type Result_3 = variant { ok : Stake; err : text };
+type Result_4 = variant { ok : Portfolio; err : text };
+type Result_5 = variant { ok : Pool; err : text };
+type Stake = record {
+  id : StakeId;
+  startTime : Timestamp;
+  userId : UserId;
+  lastClaimTime : Timestamp;
+  isActive : bool;
+  amount : Amount;
+  poolId : PoolId;
+};
+type StakeId = nat;
+type Timestamp = int;
+type UserId = principal;
+type Xonora = service {
+  getPool : (PoolId) -> (Result_5) query;
+  getPools : () -> (vec Pool) query;
+  getPortfolio : (UserId) -> (Result_4) query;
+  getStake : (StakeId) -> (Result_3) query;
+  getSystemInfo : () -> (
+      record { owner : principal; isInitialized : bool; totalStakes : nat },
+    ) query;
+  getUserStakes : (UserId) -> (vec Stake) query;
+  initialize : () -> (Result_2);
+  stake : (Amount, PoolId) -> (Result_1);
+  unstake : (StakeId) -> (Result);
+  whoami : () -> (principal);
+};
+service : Xonora
