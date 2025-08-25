@@ -94,7 +94,23 @@ const Staking = () => {
         if (!balanceCheck.canStake) {
           const shortfallInBTC = Number(balanceCheck.shortfall) / 100_000_000;
           const availableInBTC = Number(balanceCheck.availableBalance) / 100_000_000;
-          throw new Error(`Insufficient balance. You have ${availableInBTC.toFixed(8)} ckBTC, but need ${(Number(amountInSatoshis) / 100_000_000).toFixed(8)} ckBTC. Shortfall: ${shortfallInBTC.toFixed(8)} ckBTC`);
+          const requestedAmount = Number(amountInSatoshis) / 100_000_000;
+          
+          // Enhanced error message with helpful guidance
+          const errorMessage = `💰 **Insufficient ckBTC Balance**
+          
+**Your Balance:** ${availableInBTC.toFixed(8)} ckBTC
+**Requested Amount:** ${requestedAmount.toFixed(8)} ckBTC
+**Shortfall:** ${shortfallInBTC.toFixed(8)} ckBTC
+
+**To get ckBTC:**
+• Use the Bitcoin Bridge to convert BTC to ckBTC
+• Visit: https://internetcomputer.org/bitcoin
+• Or acquire ckBTC from exchanges supporting ICP ecosystem
+
+**Need Help?** Visit our documentation or contact support.`;
+          
+          throw new Error(errorMessage);
         }
       }
 
@@ -215,6 +231,88 @@ const Staking = () => {
                 <div className="text-sm text-xonora-secondary-400">Currently Staked</div>
               </div>
             </div>
+            
+            {/* Enhanced Feedback for Zero Balance */}
+            {userBalance.balanceInBTC === 0 && (
+              <div className="mt-6 p-4 bg-xonora-secondary-600 rounded-lg border border-xonora-primary-400/30">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0">
+                    <svg className="w-6 h-6 text-xonora-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold text-xonora-light mb-2">
+                      No ckBTC Balance Found
+                    </h4>
+                    <p className="text-xonora-secondary-300 mb-3 font-body">
+                      You need ckBTC to start staking and earning yields. Here's how to get started:
+                    </p>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-xonora-primary-400 rounded-full"></span>
+                        <span className="text-xonora-secondary-300">
+                          <strong>Bitcoin Bridge:</strong> Convert BTC to ckBTC at{' '}
+                          <a href="https://internetcomputer.org/bitcoin" target="_blank" rel="noopener noreferrer" 
+                             className="text-xonora-primary-400 hover:underline">
+                            internetcomputer.org/bitcoin
+                          </a>
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-xonora-primary-400 rounded-full"></span>
+                        <span className="text-xonora-secondary-300">
+                          <strong>Exchanges:</strong> Purchase ckBTC from exchanges supporting the ICP ecosystem
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-xonora-primary-400 rounded-full"></span>
+                        <span className="text-xonora-secondary-300">
+                          <strong>Minimum:</strong> You need at least 0.001 ckBTC to start staking
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex space-x-3">
+                      <a href="https://internetcomputer.org/bitcoin" target="_blank" rel="noopener noreferrer"
+                         className="px-4 py-2 bg-xonora-primary-400 text-xonora-dark rounded-lg font-semibold hover:bg-xonora-primary-300 transition-colors">
+                        Get ckBTC
+                      </a>
+                      <button onClick={loadData}
+                              className="px-4 py-2 border border-xonora-primary-400 text-xonora-primary-400 rounded-lg font-semibold hover:bg-xonora-primary-400 hover:text-xonora-dark transition-colors">
+                        Refresh Balance
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Enhanced Feedback for Low Balance */}
+            {userBalance.balanceInBTC > 0 && userBalance.availableForStakingInBTC < 0.001 && (
+              <div className="mt-6 p-4 bg-xonora-secondary-600 rounded-lg border border-xonora-warning/30">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0">
+                    <svg className="w-6 h-6 text-xonora-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold text-xonora-light mb-2">
+                      Insufficient Balance for Staking
+                    </h4>
+                    <p className="text-xonora-secondary-300 mb-3 font-body">
+                      You have {userBalance.balanceInBTC.toFixed(8)} ckBTC, but need at least 0.001 ckBTC to start staking.
+                    </p>
+                    <div className="mt-4">
+                      <a href="https://internetcomputer.org/bitcoin" target="_blank" rel="noopener noreferrer"
+                         className="px-4 py-2 bg-xonora-warning text-xonora-dark rounded-lg font-semibold hover:bg-xonora-warning/80 transition-colors">
+                        Get More ckBTC
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -432,7 +530,7 @@ const Staking = () => {
 
                       {stake.isActive && (
                         <button
-                          onClick={() => handleUnstake(stake.id)}
+                          onClick={() => handleUnstake(BigInt(stake.id))}
                           disabled={isLoading}
                           className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
