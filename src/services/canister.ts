@@ -1,5 +1,6 @@
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
+import { Principal } from '@dfinity/principal';
 import { idlFactory } from '../declarations/xonora_backend/xonora_backend.did.js';
 import type { _SERVICE as Xonora } from '../declarations/xonora_backend/xonora_backend.did.d.ts';
 import { getCanisterId, getICHost, getIdentityProvider, getNetwork, isProduction, validateEnvironment } from '../config/canister';
@@ -293,21 +294,39 @@ class CanisterService {
 
   private async setupCkBTCLedgerActor() {
     try {
+      console.log('🔗 Setting up ckBTC ledger actor...');
+      
       // ckBTC ledger canister ID on mainnet
       const ckBTCLedgerId = 'mxzaz-hqaaa-aaaar-qaada-cai';
+      console.log('📋 ckBTC ledger canister ID:', ckBTCLedgerId);
       
       // Import ckBTC ledger interface
       const { idlFactory: ckBTCIdlFactory } = await import('../declarations/ckbtc_ledger/ckbtc_ledger.did.js');
+      console.log('✅ ckBTC ledger interface imported');
       
+      // Create ckBTC ledger actor with the same agent
       this.ckBTCLedgerActor = Actor.createActor(ckBTCIdlFactory, {
         agent: this.agent,
         canisterId: ckBTCLedgerId,
       });
       
-      console.log('ckBTC ledger actor setup complete');
+      console.log('✅ ckBTC ledger actor setup complete');
+      
+      // Test the ckBTC ledger connection
+      try {
+        console.log('🧪 Testing ckBTC ledger connection...');
+        // Try to get metadata to test the connection
+        const metadata = await this.ckBTCLedgerActor.icrc1_metadata();
+        console.log('✅ ckBTC ledger connection test successful');
+      } catch (testError) {
+        console.warn('⚠️ ckBTC ledger connection test failed:', testError);
+        // Don't fail the setup, but log the warning
+      }
+      
     } catch (error) {
-      console.warn('Failed to setup ckBTC ledger actor:', error);
+      console.warn('⚠️ Failed to setup ckBTC ledger actor:', error);
       // Don't fail the whole setup if ckBTC ledger is not available
+      this.ckBTCLedgerActor = null;
     }
   }
 
@@ -415,12 +434,19 @@ class CanisterService {
     }
 
     try {
+      console.log('💰 Getting ckBTC balance for user:', userId);
+      
+      // Convert string to Principal object
+      const principal = Principal.fromText(userId);
+      console.log('🔐 Converted to principal:', principal.toText());
+      
       const balance = await this.ckBTCLedgerActor.icrc1_balance_of({
-        owner: { principal: userId },
+        owner: { principal },
         subaccount: []
       });
 
       const balanceInBTC = Number(balance) / 100_000_000; // Convert from satoshis to BTC
+      console.log('✅ Balance retrieved:', balance.toString(), 'satoshis (', balanceInBTC, 'BTC)');
       
       return {
         balance,
@@ -429,29 +455,62 @@ class CanisterService {
         availableForStakingInBTC: balanceInBTC
       };
     } catch (error) {
-      console.error('Failed to get ckBTC balance:', error);
+      console.error('❌ Failed to get ckBTC balance:', error);
+      
+      // Provide more specific error information
+      if (error instanceof Error) {
+        if (error.message.includes('Invalid principal')) {
+          console.error('🔐 Invalid principal format:', userId);
+          console.error('💡 This might be due to authentication issues or incorrect principal format.');
+        } else if (error.message.includes('ckBTC ledger not available')) {
+          console.error('🔗 ckBTC ledger actor not initialized.');
+        } else {
+          console.error('💰 Unexpected error during balance retrieval:', error.message);
+        }
+      }
+      
       throw new Error('Failed to retrieve ckBTC balance');
     }
   }
 
   async checkBalanceForStaking(userId: string, stakeAmount: bigint): Promise<{ canStake: boolean; availableBalance: bigint; shortfall?: bigint }> {
     try {
+      console.log('🔍 Checking balance for staking...');
+      console.log('User ID:', userId);
+      console.log('Stake amount:', stakeAmount.toString());
+      
       const balance = await this.getCkBTCBalance(userId);
+      console.log('Current balance:', balance.balance.toString());
       
       if (balance.balance >= stakeAmount) {
+        console.log('✅ Sufficient balance for staking');
         return {
           canStake: true,
           availableBalance: balance.balance
         };
       } else {
+        const shortfall = stakeAmount - balance.balance;
+        console.log('❌ Insufficient balance. Shortfall:', shortfall.toString());
         return {
           canStake: false,
           availableBalance: balance.balance,
-          shortfall: stakeAmount - balance.balance
+          shortfall
         };
       }
     } catch (error) {
-      console.error('Failed to check balance for staking:', error);
+      console.error('❌ Failed to check balance for staking:', error);
+      
+      // Provide more specific error information
+      if (error instanceof Error) {
+        if (error.message.includes('Invalid principal')) {
+          console.error('🔐 Principal format error. Please ensure you are properly authenticated.');
+        } else if (error.message.includes('ckBTC ledger not available')) {
+          console.error('🔗 ckBTC ledger not available. This might be a network issue.');
+        } else if (error.message.includes('Failed to retrieve ckBTC balance')) {
+          console.error('💰 Balance retrieval failed. This might be a ledger connectivity issue.');
+        }
+      }
+      
       throw new Error('Failed to check balance for staking');
     }
   }
@@ -484,12 +543,32 @@ class CanisterService {
 
   async getUserStakes(userId: string): Promise<Stake[]> {
     if (!this.actor) throw new Error('Actor not initialized');
-    return await this.actor.getUserStakes(userId);
+    
+    try {
+      console.log('📊 Getting user stakes for user:', userId);
+      const principal = Principal.fromText(userId);
+      console.log('🔐 Converted to principal:', principal.toText());
+      
+      return await this.actor.getUserStakes(principal);
+    } catch (error) {
+      console.error('❌ Failed to get user stakes:', error);
+      throw error;
+    }
   }
 
   async getPortfolio(userId: string): Promise<{ ok?: Portfolio; err?: string }> {
     if (!this.actor) throw new Error('Actor not initialized');
-    return await this.actor.getPortfolio(userId);
+    
+    try {
+      console.log('📈 Getting portfolio for user:', userId);
+      const principal = Principal.fromText(userId);
+      console.log('🔐 Converted to principal:', principal.toText());
+      
+      return await this.actor.getPortfolio(principal);
+    } catch (error) {
+      console.error('❌ Failed to get portfolio:', error);
+      throw error;
+    }
   }
 
   async getStake(stakeId: number): Promise<{ ok?: Stake; err?: string }> {
