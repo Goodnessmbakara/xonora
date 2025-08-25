@@ -436,13 +436,15 @@ class CanisterService {
     try {
       console.log('💰 Getting ckBTC balance for user:', userId);
       
-      // Convert string to Principal object
+      // Convert string to Principal object properly
       const principal = Principal.fromText(userId);
       console.log('🔐 Converted to principal:', principal.toText());
       
+      // Create the Account record structure as expected by ckBTC ledger
+      // Pass the principal directly without wrapping it in an object
       const balance = await this.ckBTCLedgerActor.icrc1_balance_of({
-        owner: { principal },
-        subaccount: []
+        owner: principal,
+        subaccount: null // Use null instead of empty array
       });
 
       const balanceInBTC = Number(balance) / 100_000_000; // Convert from satoshis to BTC
