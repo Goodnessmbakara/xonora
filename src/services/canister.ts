@@ -441,10 +441,9 @@ class CanisterService {
       console.log('🔐 Converted to principal:', principal.toText());
       
       // Create the Account record structure as expected by ckBTC ledger
-      // Pass the principal directly without wrapping it in an object
+      // Try omitting subaccount field to use default behavior
       const balance = await this.ckBTCLedgerActor.icrc1_balance_of({
-        owner: principal,
-        subaccount: null // Use null instead of empty array
+        owner: principal
       });
 
       const balanceInBTC = Number(balance) / 100_000_000; // Convert from satoshis to BTC
