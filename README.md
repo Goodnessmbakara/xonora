@@ -1,419 +1,154 @@
-# 🚀 Xonora - Bitcoin Yield Farming on ICP
+# Xonora - Internet Computer Staking Platform
 
-A decentralized yield farming platform built on the Internet Computer (ICP) that allows users to stake ckBTC (wrapped Bitcoin) and earn yields through AI-optimized strategies.
+## 🚀 Live on Mainnet
 
----
+**Xonora is now live on the Internet Computer mainnet!**
 
-## 🎯 **Project Overview**
+- **🌐 Live Application**: https://dg6uy-tqaaa-aaaap-qqcka-cai.icp0.io/
+- **📊 Backend API**: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=dtzfv-syaaa-aaaap-qqcjq-cai
+- **📧 Contact**: xonora25@gmail.com
+- **🐦 Twitter**: @Xonora_btc
 
-### **Motivation & Problem Statement**
+## 🎯 About Xonora
 
-**The Challenge:**
-- **Low Bitcoin Utilization**: Bitcoin holders face limited earning opportunities - most Bitcoin sits idle in wallets
-- **Centralized Risk**: Traditional yield farming platforms are centralized, creating single points of failure
-- **High Gas Fees**: Ethereum-based DeFi platforms charge exorbitant gas fees, making small transactions uneconomical
-- **Complex User Experience**: Existing DeFi platforms require technical knowledge and multiple wallet setups
-- **Limited Cross-Chain Access**: Users can't easily access yields from multiple blockchain ecosystems
+Xonora is a decentralized staking platform built on the Internet Computer (ICP) that allows users to stake their assets and earn yields through various staking pools. The platform features a modern, user-friendly interface with real-time yield calculations and portfolio management.
 
-**The Opportunity:**
-- **$1.2T Bitcoin Market**: Massive untapped potential for yield generation
-- **Growing DeFi Adoption**: Users increasingly seeking passive income from crypto assets
-- **ICP's Unique Advantages**: Zero gas fees, native Bitcoin integration, and cross-chain capabilities
+## ✨ Features
 
-### **Solution Description**
-
-**Xonora** is a decentralized yield farming platform that leverages the Internet Computer's unique capabilities to solve these problems:
-
-#### **🔗 Native Bitcoin Integration**
-- **ckBTC Staking**: Direct Bitcoin staking without complex wrapping processes
-- **Real Bitcoin Backing**: Every ckBTC is backed by actual Bitcoin on the Bitcoin network
-- **Seamless Onboarding**: Users can stake Bitcoin directly without learning new protocols
-
-#### **⚡ Zero Gas Fee Experience**
-- **Reverse Gas Model**: Users don't pay transaction fees - the platform covers all costs
-- **Micro-Transaction Support**: Enable small staking amounts that would be uneconomical on other chains
-- **Inclusive Access**: Democratize yield farming for users with any budget size
-
-#### **🛡️ Enhanced Security**
-- **Internet Identity**: Passwordless authentication using ICP's native identity system
-- **Canister Smart Contracts**: Decentralized, tamper-proof backend logic
-- **Multi-Signature Support**: Institutional-grade security for large staking operations
-
-#### **🤖 AI-Powered Optimization**
-- **Dynamic Yield Strategies**: AI algorithms optimize yield based on market conditions
-- **Risk-Adjusted Returns**: Multiple risk profiles (Stable 5%, Balanced 10%, Aggressive 15%)
-- **Real-Time Analytics**: Comprehensive portfolio tracking and performance insights
-
-#### **🌐 Cross-Chain Future**
-- **Chain Fusion Ready**: Built to integrate with Ethereum, Solana, and other chains
-- **Unified Experience**: Single platform for multi-chain yield farming
-- **Liquidity Aggregation**: Access the best yields across all major blockchains
-
----
-
-## 🛠️ Quick Start for Local Development
-
-### Prerequisites
-- Node.js 18+ and npm
-- DFX (Internet Computer SDK) - Version 0.27.0
-- Mops (Motoko package manager)
-
-### 1. Clone and Install
-```bash
-git clone https://github.com/Goodnessmbakara/xonora.git
-cd xonora
-npm install
-mops install
-```
-
-### 2. Start the Local ICP Replica
-```bash
-dfx start --clean --background
-```
-
-### 3. Deploy All Canisters (Backend, Frontend, Internet Identity)
-```bash
-dfx deploy
-```
-
-- **Canister IDs:** (These are automatically detected from your local DFX deployment)
-  - Backend: Check with `dfx canister id xonora_backend`
-  - Frontend: Check with `dfx canister id xonora_frontend`
-  - Internet Identity: Check with `dfx canister id internet_identity`
-
-### 4. Initialize the Backend System
-```bash
-dfx canister call xonora_backend initialize
-```
-
-### 5. Start the Frontend (on 127.0.0.1)
-```bash
-npm run dev -- --host 127.0.0.1
-```
-- Open [http://127.0.0.1:8080](http://127.0.0.1:8080) (or the port Vite prints)
-- **Alternative**: Access via canister directly at [http://u6s2n-gx777-77774-qaaba-cai.localhost:8000/](http://u6s2n-gx777-77774-qaaba-cai.localhost:8000/)
-
-### 6. Internet Identity (Local Auth)
-- The app uses a local Internet Identity canister for authentication.
-- When prompted to log in, a popup will use the local Internet Identity canister.
-- **Backend API**: Automatically configured based on your local deployment.
-- You can create a new identity or use an existing one.
-
-### 7. Environment Configuration
-
-The application automatically detects your environment and configures itself accordingly:
-
-- **Local Development**: Automatically uses local canister IDs and network
-- **Production**: Requires environment variables (see [ENVIRONMENT.md](./ENVIRONMENT.md))
-
-For production deployment, you'll need to set:
-```bash
-VITE_CANISTER_ID_XONORA_BACKEND=your_deployed_canister_id
-VITE_NETWORK=ic
-VITE_IC_HOST=https://ic0.app
-```
-
-### 8. Troubleshooting
-- **Auth stuck on "Loading..."?**
-  - Make sure you use `127.0.0.1` (not `localhost`) everywhere.
-  - Make sure all canisters are deployed and running.
-  - Check browser console for CORS or network errors.
-- **Internet Identity errors?**
-  - Ensure you have both `internet_identity.did` and `internet_identity.wasm` in `src/declarations/internet_identity/`.
-  - If you see "Canister not found", make sure you deployed II and are using the correct canister ID.
-- **Canister import errors?**
-  - Run `dfx generate` to regenerate canister bindings if you change the backend interface.
-- **Environment variable errors?**
-  - Check that all required `VITE_*` variables are set for production
-  - Verify canister IDs are correct and accessible
-
----
-
-## 🌟 Features
-
-- **ckBTC Staking**: Stake your Bitcoin on ICP with multiple risk profiles
-- **Yield Optimization**: AI-powered strategies for maximum returns
-- **Real-time Analytics**: Track your portfolio performance and yields
-- **Internet Identity**: Secure authentication using ICP's native identity system
-- **Multiple Risk Profiles**: Choose from Stable (5% APY), Balanced (10% APY), or Aggressive (15% APY)
-- **Portfolio Management**: Comprehensive dashboard for managing your stakes
+- **🔐 Secure Authentication**: Internet Identity integration
+- **📈 Multiple Staking Pools**: Stable (5%), Balanced (10%), Aggressive (15%) APY
+- **💼 Portfolio Dashboard**: Real-time portfolio tracking and metrics
+- **🎨 Modern UI**: Responsive design with brand-consistent styling
+- **⚡ Real-time Data**: Live backend integration for up-to-date information
+- **🛡️ Security**: HTTPS enforced with proper CORS and certificate validation
 
 ## 🏗️ Architecture
 
-### Frontend
-- **React 18** with TypeScript
-- **Tailwind CSS** for styling with Xonora color scheme
-- **Shadcn/ui** component library
-- **React Query** for data fetching
-- **React Router** for navigation
+### Backend (Motoko)
+- **Canister ID**: `dtzfv-syaaa-aaaap-qqcjq-cai`
+- **Language**: Motoko
+- **Features**: Staking pools, user management, yield calculations
 
-### Backend
-- **Motoko** canisters on ICP
-- **Stable storage** for persistent data
-- **Real-time yield calculations**
-- **Portfolio management system**
+### Frontend (React + TypeScript)
+- **Canister ID**: `dg6uy-tqaaa-aaaap-qqcka-cai`
+- **Framework**: React with TypeScript
+- **Styling**: Tailwind CSS with custom brand colors
+- **Authentication**: Internet Identity integration
 
-### Key Canisters
-- `xonora_backend`: Core business logic and state management
-- `xonora_frontend`: Deployed React application
-- `internet_identity`: Local authentication (required for local dev)
+## 🚀 Quick Start
 
-## 📁 Project Structure
+### For Users
+1. Visit the live application: https://dg6uy-tqaaa-aaaap-qqcka-cai.icp0.io/
+2. Connect with Internet Identity
+3. Choose a staking pool
+4. Start earning yields!
 
+### For Developers
+
+#### Prerequisites
+- Node.js 18+ and npm
+- DFX (DFINITY Canister SDK)
+- Internet Identity account
+
+#### Local Development
+```bash
+# Clone the repository
+git clone https://github.com/Goodnessmbakara/xonora.git
+cd xonora
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your configuration
+
+# Start development server
+npm run dev
 ```
-xonora/
-├── src/
-│   ├── backend/                 # Motoko canisters
-│   │   └── main.mo             # Main backend logic
-│   ├── components/             # React components
-│   ├── pages/                  # Page components
-│   ├── services/               # Canister service layer
-│   └── declarations/           # Auto-generated canister interfaces
-├── dfx.json                    # ICP project configuration
-├── mops.toml                   # Motoko dependencies
-└── package.json                # Frontend dependencies
+
+#### Environment Configuration
+Create a `.env.local` file with:
+```bash
+VITE_CANISTER_ID_XONORA_BACKEND=dtzfv-syaaa-aaaap-qqcjq-cai
+VITE_DFX_NETWORK=ic
+VITE_IC_HOST=https://ic0.app
+VITE_IDENTITY_PROVIDER=https://identity.ic0.app
 ```
+
+## 📚 Documentation
+
+- **[Environment Setup](ENVIRONMENT.md)**: Complete environment configuration guide
+- **[Testing Guide](TESTING.md)**: Comprehensive testing procedures and results
+- **[Deployment Guide](DEPLOYMENT.md)**: Step-by-step deployment instructions
+- **[Deployment Summary](DEPLOYMENT_SUMMARY.md)**: Complete deployment overview
 
 ## 🔧 Development
 
-### Backend Development
-- **Stake Management**: Create, view, and unstake positions
-- **Pool Management**: Multiple yield pools with different risk profiles
-- **Portfolio Tracking**: User portfolio management and analytics
-- **Yield Calculations**: Real-time APY and earnings calculations
-
-### Frontend Development
-- **Landing Page**: Project introduction and features
-- **Staking Interface**: Connect wallet and stake ckBTC
-- **Dashboard**: Portfolio overview and analytics
-- **Responsive Design**: Works on desktop and mobile
-
-### Key Components
-- `CanisterService`: Handles all backend communication
-- `StakingPage`: Main staking interface
-- `Dashboard`: Portfolio management
-- `Header`: Navigation and wallet connection
-
-## 🛡️ Security Features
-- **Internet Identity Authentication**: Secure user authentication
-- **Input Validation**: All user inputs are validated
-- **Access Control**: Proper authorization checks
-- **Stable Storage**: Persistent data storage on ICP
-
-## 🚀 ICP Tech Features
-
-### Currently Integrated
-- ✅ **Internet Identity**: Passwordless authentication using ICP's native identity system
-- ✅ **Canister Smart Contracts**: Decentralized backend logic on ICP
-- ✅ **Stable Storage**: Persistent data storage across canister upgrades
-
-### Potential Integrations for Xonora
-
-#### 🔐 **Threshold ECDSA** (Recommended for DeFi)
-- **Use Case**: Multi-signature wallet for yield farming operations
-- **Benefits**: Enhanced security for large staking operations, institutional-grade custody
-- **Implementation**: Use for pool management and emergency withdrawals
-
-#### 🔗 **Chain Fusion** (Future Enhancement)
-- **Use Case**: Cross-chain yield farming beyond just Bitcoin
-- **Benefits**: Access to yields from Ethereum, Solana, and other chains
-- **Implementation**: Integrate with EVM and Solana subnets on ICP
-
-#### 🔑 **VetKeys** (Advanced Security)
-- **Use Case**: Verifiable credentials for KYC/AML compliance
-- **Benefits**: Regulatory compliance while maintaining privacy
-- **Implementation**: Optional KYC for institutional users
-
-#### ⛽ **Reverse Gas Fee Model** (User Experience)
-- **Use Case**: Users don't pay gas fees for transactions
-- **Benefits**: Better UX, no wallet setup required
-- **Implementation**: Already partially implemented with Internet Identity
-
-#### 🤖 **AI/LLM Integration** (Yield Optimization)
-- **Use Case**: AI-powered yield strategy recommendations
-- **Benefits**: Optimized returns based on market conditions
-- **Implementation**: Local LLM or cloud APIs via HTTP outcalls
-
-## 📊 API Reference
-
-### Backend Canister Methods
-```motoko
-// Initialize the system
-initialize() -> Result.Result<Text, Text>
-
-// Stake ckBTC
-stake(amount: Amount, poolId: PoolId) -> Result.Result<StakeId, Text>
-
-// Unstake ckBTC
-unstake(stakeId: StakeId) -> Result.Result<Amount, Text>
-
-// Get all pools
-getPools() -> [Pool]
-
-// Get user portfolio
-getPortfolio(userId: UserId) -> Result.Result<Portfolio, Text>
-
-// Get user stakes
-getUserStakes(userId: UserId) -> [Stake]
+### Project Structure
+```
+xonora/
+├── src/
+│   ├── backend/          # Motoko backend canister
+│   ├── components/       # React components
+│   ├── pages/           # Application pages
+│   ├── services/        # Backend service layer
+│   ├── contexts/        # React contexts
+│   └── utils/           # Utility functions
+├── public/              # Static assets
+└── docs/               # Documentation
 ```
 
-## 🚀 Deployment
-
-### Local Development
+### Available Scripts
 ```bash
-dfx start --clean
-dfx deploy
-npm run dev -- --host 127.0.0.1
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
 ```
 
-### Testnet Deployment
-```bash
-dfx deploy --network ic_testnet
-```
+## 🛡️ Security
 
-### Mainnet Deployment
-```bash
-# Build the frontend
-npm run build
+- **Secure Identity**: Encrypted mainnet identity for deployment
+- **HTTPS**: All connections encrypted
+- **Input Validation**: Comprehensive backend validation
+- **Error Handling**: Secure error responses
+- **CORS**: Proper cross-origin configuration
 
-# Deploy to mainnet
-dfx deploy --network ic
+## 📊 Performance
 
-# Get canister IDs
-dfx canister id xonora_backend --network ic
-dfx canister id xonora_frontend --network ic
+### Backend
+- **Memory**: 190 Bytes
+- **Cycles**: 99.6B remaining
+- **Response Time**: < 100ms
 
-# Initialize the backend
-dfx canister call xonora_backend initialize --network ic
-```
+### Frontend
+- **Bundle Size**: 681KB (gzipped: 210KB)
+- **Load Time**: < 2 seconds
+- **Memory**: 5.4MB
 
-### Production URLs
-After deployment, your canisters will be available at:
-- **Frontend**: `https://YOUR_FRONTEND_CANISTER_ID.ic0.app`
-- **Backend**: `https://YOUR_BACKEND_CANISTER_ID.ic0.app`
-- **Internet Identity**: `https://identity.ic0.app` (use official II for production)
+## 🤝 Contributing
 
-## 🗺️ **Future Roadmap**
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-### **Phase 1: MVP Launch (Current - Q4 2025)**
-- ✅ **Core Staking Platform**: Basic Bitcoin staking functionality
-- ✅ **Internet Identity Integration**: Secure authentication
-- ✅ **Portfolio Management**: User dashboard and analytics
-- ✅ **Multiple Risk Profiles**: Stable, Balanced, and Aggressive pools
-- ✅ **Local Testing**: Complete local deployment and testing
-- 🎯 **Mainnet Deployment**: Full production deployment on ICP
-- 🎯 **ckBTC Integration**: Real Bitcoin staking with ckBTC
-- 🎯 **Security Audit**: Comprehensive security review and testing
+## 📞 Support
 
-### **Phase 2: Production Enhancement (Q1 2026)**
-- 🎯 **Enhanced Security**: Threshold ECDSA for institutional-grade custody
-- 🎯 **Mobile Optimization**: Responsive design and mobile app
-- 🎯 **Analytics Dashboard**: Advanced portfolio analytics and reporting
-- 🎯 **Performance Optimization**: Improved transaction speeds and efficiency
-- 🎯 **User Experience**: Enhanced UI/UX and onboarding flow
-
-### **Phase 3: AI & Optimization (Q2 2026)**
-- 🤖 **AI-Powered Strategies**: Machine learning for yield optimization
-- 📊 **Real-Time Analytics**: Live market data and performance tracking
-- 🔄 **Dynamic Pool Management**: Automated pool rebalancing
-- 📈 **Advanced Risk Management**: Sophisticated risk assessment algorithms
-- 🎯 **Institutional Features**: Large-scale staking and custody solutions
-
-### **Phase 4: Cross-Chain Expansion (Q3 2026)**
-- 🔗 **Chain Fusion Integration**: Multi-chain yield farming
-- 🌐 **Ethereum Integration**: Access to Ethereum DeFi yields
-- ⚡ **Solana Integration**: High-speed Solana yield opportunities
-- 🔄 **Cross-Chain Arbitrage**: Automated yield optimization across chains
-- 🌍 **Global Liquidity**: Unified access to global DeFi markets
-
-### **Phase 5: Ecosystem Growth (Q4 2026)**
-- 🏛️ **Governance Token**: XON token for platform governance
-- 🎯 **DAO Structure**: Decentralized governance and decision-making
-- 🔗 **Partnership Network**: Integration with major DeFi protocols
-- 📱 **Mobile App**: Native iOS and Android applications
-- 🌍 **Global Expansion**: Multi-language support and regional compliance
-
-### **Phase 6: Advanced Features (Q1-Q2 2027)**
-- 🔐 **Advanced Security**: Zero-knowledge proofs and privacy features
-- 🤖 **AI Agents**: Autonomous yield farming bots
-- 📊 **Institutional Tools**: Advanced analytics for institutional users
-- 🌐 **Web3 Integration**: Full Web3 ecosystem compatibility
-- 🎯 **Regulatory Compliance**: KYC/AML integration with VetKeys
-- 🚀 **Layer 2 Solutions**: Integration with ICP's scaling solutions
-
-## 🎯 **Success Metrics**
-
-### **User Adoption**
-- **Target**: 10,000+ active users by end of 2026
-- **Metric**: Monthly Active Users (MAU)
-- **Goal**: 50% month-over-month growth
-
-### **Total Value Locked (TVL)**
-- **Target**: $100M+ TVL by end of 2026
-- **Metric**: Total Bitcoin staked on platform
-- **Goal**: 1% of Bitcoin market cap
-
-### **Revenue Generation**
-- **Target**: $10M+ annual revenue by 2027
-- **Metric**: Platform fees and yield sharing
-- **Goal**: Sustainable 2-5% platform fee model
-
-### **Security & Reliability**
-- **Target**: 99.9% uptime
-- **Metric**: Platform availability and security audits
-- **Goal**: Zero security incidents
-
-## 🤖 LLM Implementation Options
-
-### Option 1: Free Local LLM (Recommended for Hackathon)
-- **Cost**: $0
-- **Setup**: Use Ollama with local models (llama3.1:8b)
-- **Pros**: No costs, full control, works offline
-- **Cons**: Requires local setup, limited model capabilities
-- **Implementation**: Follow the [Motoko Vibe Template LLM guide](https://github.com/pt-icp-hub/IC-Vibe-Coding-Template-Motoko#4-running-ollama)
-
-### Option 2: Cloud LLM APIs
-- Use OpenAI, Google, or other cloud LLM APIs (cost per call)
-- Update the backend to call the cloud API from Motoko
-
-### Option 3: Skip LLM for MVP
-- Recommended for hackathon if you want to focus on core DeFi features
-
----
-
-## 🧑‍💻 Contributing
-- Fork the repo and create a feature branch
-- Make your changes and submit a pull request
-- See the issues tab for open tasks
-
-## 📄 License
-MIT
-
-## 🆘 Support
-
-- **Documentation**: [ICP Docs](https://internetcomputer.org/docs)
-- **Community**: [ICP Discord](https://discord.gg/icp)
+- **Email**: xonora25@gmail.com
+- **Twitter**: @Xonora_btc
 - **Issues**: [GitHub Issues](https://github.com/Goodnessmbakara/xonora/issues)
 
-## 🏆 Hackathon Submission
+## 📄 License
 
-This project is being developed for the **WCHL Bitcoin DeFi Track** hackathon.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### Submission Requirements Met:
-- ✅ ICP project with dfx.json
-- ✅ Multiple commits showing development progress
-- ✅ Feature-rich yield farming platform
-- ✅ Working dApp (ready for mainnet deployment)
-- ✅ Open source with MIT license
-- ✅ Comprehensive documentation
+## 🎉 Status
 
-### Demo Features:
-- Bitcoin-themed yield farming interface
-- Multiple risk profile options
-- Real-time portfolio tracking
-- Internet Identity authentication
-- Responsive design for all devices
+**✅ LIVE ON MAINNET** - Ready for users to start staking and earning yields!
 
 ---
 
-**Built with ❤️ for the ICP ecosystem**
+**Built with ❤️ on the Internet Computer**

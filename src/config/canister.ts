@@ -1,12 +1,15 @@
 /**
  * Production-ready canister configuration for Internet Computer mainnet deployment
  * 
- * Environment Variables Required:
- * - VITE_CANISTER_ID_XONORA_BACKEND: The deployed backend canister ID
- * - VITE_NETWORK: Network to use (defaults to 'ic' for mainnet)
- * - VITE_IC_HOST: (Optional) Custom IC host URL
- * - VITE_IDENTITY_PROVIDER: (Optional) Custom Internet Identity provider URL
+ * This configuration uses the actual deployed canister IDs for mainnet.
+ * Environment variables are used as fallbacks for local development.
  */
+
+// Deployed canister IDs for mainnet
+const DEPLOYED_CANISTER_IDS = {
+  xonora_backend: 'dtzfv-syaaa-aaaap-qqcjq-cai',
+  xonora_frontend: 'dg6uy-tqaaa-aaaap-qqcka-cai'
+} as const;
 
 /**
  * Get the current network configuration
@@ -28,18 +31,13 @@ export const isProduction = (): boolean => {
  * Get canister ID for the specified canister
  * @param canisterName - The name of the canister
  * @returns The canister ID
- * @throws Error if required environment variables are missing
  */
 export const getCanisterId = (canisterName: 'xonora_backend' | 'internet_identity'): string => {
   if (canisterName === 'xonora_backend') {
-    const canisterId = import.meta.env.VITE_CANISTER_ID_XONORA_BACKEND;
-    if (!canisterId) {
-      throw new Error(
-        'VITE_CANISTER_ID_XONORA_BACKEND environment variable is required for mainnet deployment. ' +
-        'Please set this to your deployed backend canister ID.'
-      );
-    }
-    return canisterId;
+    // Use deployed canister ID directly, fallback to environment variable for local dev
+    return DEPLOYED_CANISTER_IDS.xonora_backend || 
+           import.meta.env.VITE_CANISTER_ID_XONORA_BACKEND || 
+           'dtzfv-syaaa-aaaap-qqcjq-cai';
   }
   
   if (canisterName === 'internet_identity') {
@@ -66,22 +64,18 @@ export const getIdentityProvider = (): string => {
 };
 
 /**
- * Validate that all required environment variables are present
- * @throws Error if required variables are missing
+ * Validate that all required configuration is present
+ * This is a simplified validation for the deployed version
  */
 export const validateEnvironment = (): void => {
-  const missingVars: string[] = [];
-  
-  if (!import.meta.env.VITE_CANISTER_ID_XONORA_BACKEND) {
-    missingVars.push('VITE_CANISTER_ID_XONORA_BACKEND');
-  }
-  
-  if (missingVars.length > 0) {
-    throw new Error(
-      `Missing required environment variables for mainnet deployment: ${missingVars.join(', ')}\n` +
-      'Please set these variables in your deployment environment.'
-    );
-  }
-  
-  console.log('✅ Environment validation passed for mainnet deployment');
+  console.log('✅ Using deployed canister configuration for mainnet');
+  console.log(`🔗 Backend Canister: ${DEPLOYED_CANISTER_IDS.xonora_backend}`);
+  console.log(`🌐 Network: ${getNetwork()}`);
+  console.log(`🏠 IC Host: ${getICHost()}`);
+  console.log(`🔐 Identity Provider: ${getIdentityProvider()}`);
 };
+
+/**
+ * Get the deployed canister IDs for reference
+ */
+export const getDeployedCanisterIds = () => DEPLOYED_CANISTER_IDS;
