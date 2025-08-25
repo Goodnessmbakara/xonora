@@ -93,8 +93,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       const success = await canisterService.initialize();
       if (success) {
-        const authenticated = canisterService.isAuthenticated();
+        // Fix: Use await for async authentication check
+        const authenticated = await canisterService.isAuthenticated();
         setIsAuthenticated(authenticated);
+        
         if (authenticated) {
           const userPrincipal = canisterService.getPrincipal();
           setPrincipal(userPrincipal);
@@ -178,9 +180,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Sync connection status with canister service
   useEffect(() => {
-    const syncConnectionStatus = () => {
+    const syncConnectionStatus = async () => {
       try {
-        const status = canisterService.getConnectionStatus();
+        const status = await canisterService.getConnectionStatus();
         if (status === 'connected' && isAuthenticated) {
           setConnectionStatus('connected');
         } else if (status === 'error' && connectionStatus !== 'connecting') {
@@ -202,17 +204,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, [isAuthenticated, connectionStatus]);
 
-  // Cleanup retry timeout on unmount
+  // Initialize on mount
   useEffect(() => {
+    initialize();
+    
+    // Cleanup retry timeout on unmount
     return () => {
       if (retryTimeoutRef.current) {
         clearTimeout(retryTimeoutRef.current);
       }
     };
-  }, []);
-
-  useEffect(() => {
-    initialize();
   }, []);
 
   const value: AuthContextType = {

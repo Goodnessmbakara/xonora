@@ -80,34 +80,60 @@ class CanisterService {
 
   async initialize() {
     try {
+      console.log('🚀 Starting canister service initialization...');
+      
       // Validate environment variables first
       validateEnvironment();
       
       const network = getNetwork();
-      console.log(`Initializing canister service for mainnet deployment`);
+      console.log(`🌐 Network: ${network}`);
       
-      // Initialize auth client
+      // Initialize auth client with better error handling
+      console.log('🔐 Creating AuthClient...');
       this.authClient = await AuthClient.create({
         idleOptions: {
           disableDefaultIdleCallback: true,
           idleTimeout: 1000 * 60 * 30, // 30 minutes
         },
       });
+      console.log('✅ AuthClient created successfully');
 
       // Check if user is already authenticated
+      console.log('🔍 Checking authentication status...');
       const isAuthenticated = await this.authClient.isAuthenticated();
+      console.log(`🔐 Authentication status: ${isAuthenticated}`);
       
       if (isAuthenticated) {
+        console.log('👤 User is authenticated, setting up actor...');
         await this.setupActorWithIdentity();
+        console.log('✅ Actor setup complete for authenticated user');
+      } else {
+        console.log('👤 User is not authenticated, ready for login');
       }
 
-      console.log(`Canister service initialized for mainnet deployment`, { isAuthenticated });
+      console.log(`✅ Canister service initialized for mainnet deployment`, { 
+        isAuthenticated,
+        hasAuthClient: !!this.authClient,
+        hasActor: !!this.actor,
+        canisterId: this.canisterId
+      });
       return true;
     } catch (error) {
-      console.error('Failed to initialize canister service:', error);
-      if (error instanceof Error && error.message.includes('VITE_CANISTER_ID_XONORA_BACKEND')) {
-        console.error('Environment variable error. Please check your deployment configuration.');
+      console.error('❌ Failed to initialize canister service:', error);
+      
+      // Provide more specific error information
+      if (error instanceof Error) {
+        if (error.message.includes('VITE_CANISTER_ID_XONORA_BACKEND')) {
+          console.error('🔧 Environment variable error. Please check your deployment configuration.');
+        } else if (error.message.includes('AuthClient')) {
+          console.error('🔐 AuthClient creation failed. This might be a browser compatibility issue.');
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          console.error('🌐 Network error during initialization. Please check your internet connection.');
+        } else if (error.message.includes('canister') || error.message.includes('backend')) {
+          console.error('🔗 Backend canister error. Please verify the canister is running.');
+        }
       }
+      
       return false;
     }
   }
@@ -118,13 +144,15 @@ class CanisterService {
     }
 
     try {
+      console.log('🔧 Setting up actor with identity...');
+      
       const identity = this.authClient.getIdentity();
       const principal = identity.getPrincipal();
-      console.log('Setting up actor with identity:', principal.toText());
+      console.log('👤 Identity principal:', principal.toText());
 
       // Create agent with authenticated identity
       const host = getICHost();
-      console.log('Creating agent with host:', host);
+      console.log('🏠 Creating agent with host:', host);
       
       // Create agent for mainnet deployment
       this.agent = new HttpAgent({
@@ -132,30 +160,56 @@ class CanisterService {
         host,
         verifyQuerySignatures: true, // Always verify signatures for mainnet
       });
-
-      console.log('Agent configured for mainnet deployment');
+      console.log('✅ Agent created successfully');
 
       // Set canister ID
       this.canisterId = getCanisterId('xonora_backend');
-      console.log('Using backend canister ID:', this.canisterId);
+      console.log('🔗 Using backend canister ID:', this.canisterId);
 
       // Create actor
-      console.log('Creating actor...');
+      console.log('🎭 Creating actor...');
       this.actor = Actor.createActor<Xonora>(idlFactory, {
         agent: this.agent,
         canisterId: this.canisterId,
       });
+      console.log('✅ Actor created successfully');
+
+      // Test actor connection
+      console.log('🧪 Testing actor connection...');
+      try {
+        const systemInfo = await this.actor.getSystemInfo();
+        console.log('✅ Actor connection test successful:', systemInfo);
+      } catch (testError) {
+        console.warn('⚠️ Actor connection test failed:', testError);
+        // Don't throw here, as the actor might still be usable
+      }
 
       // Setup ckBTC ledger actor
       await this.setupCkBTCLedgerActor();
 
-      console.log('Actor setup complete successfully', { 
+      console.log('🎉 Actor setup complete successfully', { 
         canisterId: this.canisterId,
         principal: principal.toText(),
-        host 
+        host,
+        hasActor: !!this.actor,
+        hasAgent: !!this.agent
       });
     } catch (error) {
-      console.error('Error in setupActorWithIdentity:', error);
+      console.error('❌ Error in setupActorWithIdentity:', error);
+      
+      // Provide more specific error information
+      if (error instanceof Error) {
+        if (error.message.includes('identity')) {
+          console.error('🔐 Identity error. Please ensure you are properly authenticated.');
+        } else if (error.message.includes('agent')) {
+          console.error('🌐 Agent creation error. Please check your network connection.');
+        } else if (error.message.includes('actor')) {
+          console.error('🎭 Actor creation error. Please verify the canister ID and network configuration.');
+        } else if (error.message.includes('canister')) {
+          console.error('🔗 Canister error. Please verify the backend canister is running.');
+        }
+      }
+      
       throw error;
     }
   }
